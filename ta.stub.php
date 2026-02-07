@@ -220,6 +220,105 @@ function ta_natr(array $high, array $low, array $close, int $period = 14): array
 function ta_trange(array $high, array $low, array $close): array {}
 
 /**
+ * Vector Arithmetic Add (ADD).
+ *
+ * @param float[] $valuesA
+ * @param float[] $valuesB
+ * @return array<int, float|null>
+ */
+function ta_add(array $valuesA, array $valuesB): array {}
+
+/**
+ * Vector Arithmetic Subtraction (SUB).
+ *
+ * @param float[] $valuesA
+ * @param float[] $valuesB
+ * @return array<int, float|null>
+ */
+function ta_sub(array $valuesA, array $valuesB): array {}
+
+/**
+ * Vector Arithmetic Mult (MULT).
+ *
+ * @param float[] $valuesA
+ * @param float[] $valuesB
+ * @return array<int, float|null>
+ */
+function ta_mult(array $valuesA, array $valuesB): array {}
+
+/**
+ * Vector Arithmetic Div (DIV).
+ *
+ * @param float[] $valuesA
+ * @param float[] $valuesB
+ * @return array<int, float|null>
+ */
+function ta_div(array $valuesA, array $valuesB): array {}
+
+/**
+ * Summation (SUM).
+ *
+ * @param float[] $values
+ * @param int $period Default 30
+ * @return array<int, float|null>
+ */
+function ta_sum(array $values, int $period = 30): array {}
+
+/**
+ * Highest value over a specified period (MAX).
+ *
+ * @param float[] $values
+ * @param int $period Default 30
+ * @return array<int, float|null>
+ */
+function ta_max(array $values, int $period = 30): array {}
+
+/**
+ * Lowest value over a specified period (MIN).
+ *
+ * @param float[] $values
+ * @param int $period Default 30
+ * @return array<int, float|null>
+ */
+function ta_min(array $values, int $period = 30): array {}
+
+/**
+ * Index of highest value over a specified period (MAXINDEX).
+ *
+ * @param float[] $values
+ * @param int $period Default 30
+ * @return array<int, int|null>
+ */
+function ta_maxindex(array $values, int $period = 30): array {}
+
+/**
+ * Index of lowest value over a specified period (MININDEX).
+ *
+ * @param float[] $values
+ * @param int $period Default 30
+ * @return array<int, int|null>
+ */
+function ta_minindex(array $values, int $period = 30): array {}
+
+/**
+ * Lowest and highest values over a specified period (MINMAX).
+ *
+ * @param float[] $values
+ * @param int $period Default 30
+ * @return array{min: array<int, float|null>, max: array<int, float|null>}
+ */
+function ta_minmax(array $values, int $period = 30): array {}
+
+/**
+ * Indexes of lowest and highest values over a specified period (MINMAXINDEX).
+ *
+ * @param float[] $values
+ * @param int $period Default 30
+ * @return array{min: array<int, int|null>, max: array<int, int|null>}
+ */
+function ta_minmaxindex(array $values, int $period = 30): array {}
+
+/**
  * Bollinger Bands (BBANDS).
  *
  * @param float[] $values

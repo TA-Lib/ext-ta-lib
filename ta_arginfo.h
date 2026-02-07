@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: ff737112036ca5dc7a75af32d561bc93ae9759fa */
+ * Stub hash: 007a7b0ac9a6a3cba7e1c6cf993a7a128b66ad34 */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_ta_version, 0, 0, IS_STRING, 0)
 ZEND_END_ARG_INFO()
@@ -103,6 +103,34 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_ta_trange, 0, 3, IS_ARRAY, 0)
 	ZEND_ARG_TYPE_INFO(0, low, IS_ARRAY, 0)
 	ZEND_ARG_TYPE_INFO(0, close, IS_ARRAY, 0)
 ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_ta_add, 0, 2, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO(0, valuesA, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO(0, valuesB, IS_ARRAY, 0)
+ZEND_END_ARG_INFO()
+
+#define arginfo_ta_sub arginfo_ta_add
+
+#define arginfo_ta_mult arginfo_ta_add
+
+#define arginfo_ta_div arginfo_ta_add
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_ta_sum, 0, 1, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO(0, values, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, period, IS_LONG, 0, "30")
+ZEND_END_ARG_INFO()
+
+#define arginfo_ta_max arginfo_ta_sum
+
+#define arginfo_ta_min arginfo_ta_sum
+
+#define arginfo_ta_maxindex arginfo_ta_sum
+
+#define arginfo_ta_minindex arginfo_ta_sum
+
+#define arginfo_ta_minmax arginfo_ta_sum
+
+#define arginfo_ta_minmaxindex arginfo_ta_sum
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_ta_bbands, 0, 1, IS_ARRAY, 0)
 	ZEND_ARG_TYPE_INFO(0, values, IS_ARRAY, 0)

@@ -1,0 +1,19 @@
+--TEST--
+ta_sub() computes vector subtraction
+--SKIPIF--
+<?php
+if (!extension_loaded('ta')) {
+    echo 'skip ta not loaded';
+}
+?>
+--FILE--
+<?php
+$a = range(1, 60);
+$b = range(1, 60);
+$res = ta_sub($a, $b);
+var_dump(count($res), is_float($res[0]), is_float($res[59]));
+?>
+--EXPECT--
+int(60)
+bool(true)
+bool(true)
