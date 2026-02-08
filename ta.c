@@ -2714,6 +2714,563 @@ PHP_FUNCTION(ta_ht_trendmode)
 #endif
 }
 
+
+PHP_FUNCTION(ta_beta)
+{
+  zval *input_a = NULL;
+  zval *input_b = NULL;
+  zend_long period = 5;
+
+  ZEND_PARSE_PARAMETERS_START(2, 3)
+    Z_PARAM_ARRAY(input_a)
+    Z_PARAM_ARRAY(input_b)
+    Z_PARAM_OPTIONAL
+    Z_PARAM_LONG(period)
+  ZEND_PARSE_PARAMETERS_END();
+
+#ifdef HAVE_TA
+  if (period < 1 || period > 100000) {
+    zend_throw_error(NULL, "Period must be between 1 and 100000");
+    RETURN_THROWS();
+  }
+
+  double *in_a = NULL;
+  double *in_b = NULL;
+  int len_a = 0;
+  int len_b = 0;
+  if (!ta_read_double_array(input_a, &in_a, &len_a, "ta_beta")) {
+    RETURN_THROWS();
+  }
+  if (!ta_read_double_array(input_b, &in_b, &len_b, "ta_beta")) {
+    if (in_a) efree(in_a);
+    RETURN_THROWS();
+  }
+
+  if (len_a <= 0 || len_b <= 0) {
+    if (in_a) efree(in_a);
+    if (in_b) efree(in_b);
+    array_init(return_value);
+    return;
+  }
+
+  if (len_a != len_b) {
+    efree(in_a);
+    efree(in_b);
+    zend_throw_error(NULL, "Input arrays must have the same length");
+    RETURN_THROWS();
+  }
+
+  if (period > len_a) {
+    efree(in_a);
+    efree(in_b);
+    zend_throw_error(NULL, "Period must be <= number of input values");
+    RETURN_THROWS();
+  }
+
+  double *out_real = emalloc(sizeof(double) * len_a);
+  int out_beg = 0;
+  int out_nb = 0;
+  TA_RetCode rc = TA_BETA(0, len_a - 1, in_a, in_b, (int) period, &out_beg, &out_nb, out_real);
+
+  if (rc != TA_SUCCESS) {
+    efree(in_a);
+    efree(in_b);
+    efree(out_real);
+    zend_throw_error(NULL, "TA_BETA failed (code %d)", rc);
+    RETURN_THROWS();
+  }
+
+  ta_fill_output_array(return_value, out_beg, out_nb, out_real);
+
+  efree(in_a);
+  efree(in_b);
+  efree(out_real);
+#else
+  zend_throw_error(NULL, "TA-Lib not available");
+  RETURN_THROWS();
+#endif
+}
+
+PHP_FUNCTION(ta_correl)
+{
+  zval *input_a = NULL;
+  zval *input_b = NULL;
+  zend_long period = 30;
+
+  ZEND_PARSE_PARAMETERS_START(2, 3)
+    Z_PARAM_ARRAY(input_a)
+    Z_PARAM_ARRAY(input_b)
+    Z_PARAM_OPTIONAL
+    Z_PARAM_LONG(period)
+  ZEND_PARSE_PARAMETERS_END();
+
+#ifdef HAVE_TA
+  if (period < 1 || period > 100000) {
+    zend_throw_error(NULL, "Period must be between 1 and 100000");
+    RETURN_THROWS();
+  }
+
+  double *in_a = NULL;
+  double *in_b = NULL;
+  int len_a = 0;
+  int len_b = 0;
+  if (!ta_read_double_array(input_a, &in_a, &len_a, "ta_correl")) {
+    RETURN_THROWS();
+  }
+  if (!ta_read_double_array(input_b, &in_b, &len_b, "ta_correl")) {
+    if (in_a) efree(in_a);
+    RETURN_THROWS();
+  }
+
+  if (len_a <= 0 || len_b <= 0) {
+    if (in_a) efree(in_a);
+    if (in_b) efree(in_b);
+    array_init(return_value);
+    return;
+  }
+
+  if (len_a != len_b) {
+    efree(in_a);
+    efree(in_b);
+    zend_throw_error(NULL, "Input arrays must have the same length");
+    RETURN_THROWS();
+  }
+
+  if (period > len_a) {
+    efree(in_a);
+    efree(in_b);
+    zend_throw_error(NULL, "Period must be <= number of input values");
+    RETURN_THROWS();
+  }
+
+  double *out_real = emalloc(sizeof(double) * len_a);
+  int out_beg = 0;
+  int out_nb = 0;
+  TA_RetCode rc = TA_CORREL(0, len_a - 1, in_a, in_b, (int) period, &out_beg, &out_nb, out_real);
+
+  if (rc != TA_SUCCESS) {
+    efree(in_a);
+    efree(in_b);
+    efree(out_real);
+    zend_throw_error(NULL, "TA_CORREL failed (code %d)", rc);
+    RETURN_THROWS();
+  }
+
+  ta_fill_output_array(return_value, out_beg, out_nb, out_real);
+
+  efree(in_a);
+  efree(in_b);
+  efree(out_real);
+#else
+  zend_throw_error(NULL, "TA-Lib not available");
+  RETURN_THROWS();
+#endif
+}
+
+PHP_FUNCTION(ta_linearreg)
+{
+  zval *input = NULL;
+  zend_long period = 14;
+
+  ZEND_PARSE_PARAMETERS_START(1, 2)
+    Z_PARAM_ARRAY(input)
+    Z_PARAM_OPTIONAL
+    Z_PARAM_LONG(period)
+  ZEND_PARSE_PARAMETERS_END();
+
+#ifdef HAVE_TA
+  if (period < 2 || period > 100000) {
+    zend_throw_error(NULL, "Period must be between 2 and 100000");
+    RETURN_THROWS();
+  }
+
+  double *in_real = NULL;
+  int input_len = 0;
+  if (!ta_read_double_array(input, &in_real, &input_len, "ta_linearreg")) {
+    RETURN_THROWS();
+  }
+
+  if (input_len <= 0) {
+    array_init(return_value);
+    return;
+  }
+
+  if (period > input_len) {
+    efree(in_real);
+    zend_throw_error(NULL, "Period must be <= number of input values");
+    RETURN_THROWS();
+  }
+
+  double *out_real = emalloc(sizeof(double) * input_len);
+  int out_beg = 0;
+  int out_nb = 0;
+  TA_RetCode rc = TA_LINEARREG(0, input_len - 1, in_real, (int) period, &out_beg, &out_nb, out_real);
+
+  if (rc != TA_SUCCESS) {
+    efree(in_real);
+    efree(out_real);
+    zend_throw_error(NULL, "TA_LINEARREG failed (code %d)", rc);
+    RETURN_THROWS();
+  }
+
+  ta_fill_output_array(return_value, out_beg, out_nb, out_real);
+
+  efree(in_real);
+  efree(out_real);
+#else
+  zend_throw_error(NULL, "TA-Lib not available");
+  RETURN_THROWS();
+#endif
+}
+
+PHP_FUNCTION(ta_linearreg_angle)
+{
+  zval *input = NULL;
+  zend_long period = 14;
+
+  ZEND_PARSE_PARAMETERS_START(1, 2)
+    Z_PARAM_ARRAY(input)
+    Z_PARAM_OPTIONAL
+    Z_PARAM_LONG(period)
+  ZEND_PARSE_PARAMETERS_END();
+
+#ifdef HAVE_TA
+  if (period < 2 || period > 100000) {
+    zend_throw_error(NULL, "Period must be between 2 and 100000");
+    RETURN_THROWS();
+  }
+
+  double *in_real = NULL;
+  int input_len = 0;
+  if (!ta_read_double_array(input, &in_real, &input_len, "ta_linearreg_angle")) {
+    RETURN_THROWS();
+  }
+
+  if (input_len <= 0) {
+    array_init(return_value);
+    return;
+  }
+
+  if (period > input_len) {
+    efree(in_real);
+    zend_throw_error(NULL, "Period must be <= number of input values");
+    RETURN_THROWS();
+  }
+
+  double *out_real = emalloc(sizeof(double) * input_len);
+  int out_beg = 0;
+  int out_nb = 0;
+  TA_RetCode rc = TA_LINEARREG_ANGLE(0, input_len - 1, in_real, (int) period, &out_beg, &out_nb, out_real);
+
+  if (rc != TA_SUCCESS) {
+    efree(in_real);
+    efree(out_real);
+    zend_throw_error(NULL, "TA_LINEARREG_ANGLE failed (code %d)", rc);
+    RETURN_THROWS();
+  }
+
+  ta_fill_output_array(return_value, out_beg, out_nb, out_real);
+
+  efree(in_real);
+  efree(out_real);
+#else
+  zend_throw_error(NULL, "TA-Lib not available");
+  RETURN_THROWS();
+#endif
+}
+
+PHP_FUNCTION(ta_linearreg_intercept)
+{
+  zval *input = NULL;
+  zend_long period = 14;
+
+  ZEND_PARSE_PARAMETERS_START(1, 2)
+    Z_PARAM_ARRAY(input)
+    Z_PARAM_OPTIONAL
+    Z_PARAM_LONG(period)
+  ZEND_PARSE_PARAMETERS_END();
+
+#ifdef HAVE_TA
+  if (period < 2 || period > 100000) {
+    zend_throw_error(NULL, "Period must be between 2 and 100000");
+    RETURN_THROWS();
+  }
+
+  double *in_real = NULL;
+  int input_len = 0;
+  if (!ta_read_double_array(input, &in_real, &input_len, "ta_linearreg_intercept")) {
+    RETURN_THROWS();
+  }
+
+  if (input_len <= 0) {
+    array_init(return_value);
+    return;
+  }
+
+  if (period > input_len) {
+    efree(in_real);
+    zend_throw_error(NULL, "Period must be <= number of input values");
+    RETURN_THROWS();
+  }
+
+  double *out_real = emalloc(sizeof(double) * input_len);
+  int out_beg = 0;
+  int out_nb = 0;
+  TA_RetCode rc = TA_LINEARREG_INTERCEPT(0, input_len - 1, in_real, (int) period, &out_beg, &out_nb, out_real);
+
+  if (rc != TA_SUCCESS) {
+    efree(in_real);
+    efree(out_real);
+    zend_throw_error(NULL, "TA_LINEARREG_INTERCEPT failed (code %d)", rc);
+    RETURN_THROWS();
+  }
+
+  ta_fill_output_array(return_value, out_beg, out_nb, out_real);
+
+  efree(in_real);
+  efree(out_real);
+#else
+  zend_throw_error(NULL, "TA-Lib not available");
+  RETURN_THROWS();
+#endif
+}
+
+PHP_FUNCTION(ta_linearreg_slope)
+{
+  zval *input = NULL;
+  zend_long period = 14;
+
+  ZEND_PARSE_PARAMETERS_START(1, 2)
+    Z_PARAM_ARRAY(input)
+    Z_PARAM_OPTIONAL
+    Z_PARAM_LONG(period)
+  ZEND_PARSE_PARAMETERS_END();
+
+#ifdef HAVE_TA
+  if (period < 2 || period > 100000) {
+    zend_throw_error(NULL, "Period must be between 2 and 100000");
+    RETURN_THROWS();
+  }
+
+  double *in_real = NULL;
+  int input_len = 0;
+  if (!ta_read_double_array(input, &in_real, &input_len, "ta_linearreg_slope")) {
+    RETURN_THROWS();
+  }
+
+  if (input_len <= 0) {
+    array_init(return_value);
+    return;
+  }
+
+  if (period > input_len) {
+    efree(in_real);
+    zend_throw_error(NULL, "Period must be <= number of input values");
+    RETURN_THROWS();
+  }
+
+  double *out_real = emalloc(sizeof(double) * input_len);
+  int out_beg = 0;
+  int out_nb = 0;
+  TA_RetCode rc = TA_LINEARREG_SLOPE(0, input_len - 1, in_real, (int) period, &out_beg, &out_nb, out_real);
+
+  if (rc != TA_SUCCESS) {
+    efree(in_real);
+    efree(out_real);
+    zend_throw_error(NULL, "TA_LINEARREG_SLOPE failed (code %d)", rc);
+    RETURN_THROWS();
+  }
+
+  ta_fill_output_array(return_value, out_beg, out_nb, out_real);
+
+  efree(in_real);
+  efree(out_real);
+#else
+  zend_throw_error(NULL, "TA-Lib not available");
+  RETURN_THROWS();
+#endif
+}
+
+PHP_FUNCTION(ta_stddev)
+{
+  zval *input = NULL;
+  zend_long period = 5;
+  double nbdev = 1.0;
+
+  ZEND_PARSE_PARAMETERS_START(1, 3)
+    Z_PARAM_ARRAY(input)
+    Z_PARAM_OPTIONAL
+    Z_PARAM_LONG(period)
+    Z_PARAM_DOUBLE(nbdev)
+  ZEND_PARSE_PARAMETERS_END();
+
+#ifdef HAVE_TA
+  if (period < 2 || period > 100000) {
+    zend_throw_error(NULL, "Period must be between 2 and 100000");
+    RETURN_THROWS();
+  }
+  if (nbdev < TA_REAL_MIN || nbdev > TA_REAL_MAX) {
+    zend_throw_error(NULL, "Deviations must be between TA_REAL_MIN and TA_REAL_MAX");
+    RETURN_THROWS();
+  }
+
+  double *in_real = NULL;
+  int input_len = 0;
+  if (!ta_read_double_array(input, &in_real, &input_len, "ta_stddev")) {
+    RETURN_THROWS();
+  }
+
+  if (input_len <= 0) {
+    array_init(return_value);
+    return;
+  }
+
+  if (period > input_len) {
+    efree(in_real);
+    zend_throw_error(NULL, "Period must be <= number of input values");
+    RETURN_THROWS();
+  }
+
+  double *out_real = emalloc(sizeof(double) * input_len);
+  int out_beg = 0;
+  int out_nb = 0;
+  TA_RetCode rc = TA_STDDEV(0, input_len - 1, in_real, (int) period, nbdev, &out_beg, &out_nb, out_real);
+
+  if (rc != TA_SUCCESS) {
+    efree(in_real);
+    efree(out_real);
+    zend_throw_error(NULL, "TA_STDDEV failed (code %d)", rc);
+    RETURN_THROWS();
+  }
+
+  ta_fill_output_array(return_value, out_beg, out_nb, out_real);
+
+  efree(in_real);
+  efree(out_real);
+#else
+  zend_throw_error(NULL, "TA-Lib not available");
+  RETURN_THROWS();
+#endif
+}
+
+PHP_FUNCTION(ta_tsf)
+{
+  zval *input = NULL;
+  zend_long period = 14;
+
+  ZEND_PARSE_PARAMETERS_START(1, 2)
+    Z_PARAM_ARRAY(input)
+    Z_PARAM_OPTIONAL
+    Z_PARAM_LONG(period)
+  ZEND_PARSE_PARAMETERS_END();
+
+#ifdef HAVE_TA
+  if (period < 2 || period > 100000) {
+    zend_throw_error(NULL, "Period must be between 2 and 100000");
+    RETURN_THROWS();
+  }
+
+  double *in_real = NULL;
+  int input_len = 0;
+  if (!ta_read_double_array(input, &in_real, &input_len, "ta_tsf")) {
+    RETURN_THROWS();
+  }
+
+  if (input_len <= 0) {
+    array_init(return_value);
+    return;
+  }
+
+  if (period > input_len) {
+    efree(in_real);
+    zend_throw_error(NULL, "Period must be <= number of input values");
+    RETURN_THROWS();
+  }
+
+  double *out_real = emalloc(sizeof(double) * input_len);
+  int out_beg = 0;
+  int out_nb = 0;
+  TA_RetCode rc = TA_TSF(0, input_len - 1, in_real, (int) period, &out_beg, &out_nb, out_real);
+
+  if (rc != TA_SUCCESS) {
+    efree(in_real);
+    efree(out_real);
+    zend_throw_error(NULL, "TA_TSF failed (code %d)", rc);
+    RETURN_THROWS();
+  }
+
+  ta_fill_output_array(return_value, out_beg, out_nb, out_real);
+
+  efree(in_real);
+  efree(out_real);
+#else
+  zend_throw_error(NULL, "TA-Lib not available");
+  RETURN_THROWS();
+#endif
+}
+
+PHP_FUNCTION(ta_var)
+{
+  zval *input = NULL;
+  zend_long period = 5;
+  double nbdev = 1.0;
+
+  ZEND_PARSE_PARAMETERS_START(1, 3)
+    Z_PARAM_ARRAY(input)
+    Z_PARAM_OPTIONAL
+    Z_PARAM_LONG(period)
+    Z_PARAM_DOUBLE(nbdev)
+  ZEND_PARSE_PARAMETERS_END();
+
+#ifdef HAVE_TA
+  if (period < 1 || period > 100000) {
+    zend_throw_error(NULL, "Period must be between 1 and 100000");
+    RETURN_THROWS();
+  }
+  if (nbdev < TA_REAL_MIN || nbdev > TA_REAL_MAX) {
+    zend_throw_error(NULL, "Deviations must be between TA_REAL_MIN and TA_REAL_MAX");
+    RETURN_THROWS();
+  }
+
+  double *in_real = NULL;
+  int input_len = 0;
+  if (!ta_read_double_array(input, &in_real, &input_len, "ta_var")) {
+    RETURN_THROWS();
+  }
+
+  if (input_len <= 0) {
+    array_init(return_value);
+    return;
+  }
+
+  if (period > input_len) {
+    efree(in_real);
+    zend_throw_error(NULL, "Period must be <= number of input values");
+    RETURN_THROWS();
+  }
+
+  double *out_real = emalloc(sizeof(double) * input_len);
+  int out_beg = 0;
+  int out_nb = 0;
+  TA_RetCode rc = TA_VAR(0, input_len - 1, in_real, (int) period, nbdev, &out_beg, &out_nb, out_real);
+
+  if (rc != TA_SUCCESS) {
+    efree(in_real);
+    efree(out_real);
+    zend_throw_error(NULL, "TA_VAR failed (code %d)", rc);
+    RETURN_THROWS();
+  }
+
+  ta_fill_output_array(return_value, out_beg, out_nb, out_real);
+
+  efree(in_real);
+  efree(out_real);
+#else
+  zend_throw_error(NULL, "TA-Lib not available");
+  RETURN_THROWS();
+#endif
+}
+
 PHP_FUNCTION(ta_bbands)
 {
   zval *input = NULL;
@@ -2872,6 +3429,15 @@ static const zend_function_entry ta_functions[] = {
   PHP_FE(ta_ht_phasor, arginfo_ta_ht_phasor)
   PHP_FE(ta_ht_sine, arginfo_ta_ht_sine)
   PHP_FE(ta_ht_trendmode, arginfo_ta_ht_trendmode)
+  PHP_FE(ta_beta, arginfo_ta_beta)
+  PHP_FE(ta_correl, arginfo_ta_correl)
+  PHP_FE(ta_linearreg, arginfo_ta_linearreg)
+  PHP_FE(ta_linearreg_angle, arginfo_ta_linearreg_angle)
+  PHP_FE(ta_linearreg_intercept, arginfo_ta_linearreg_intercept)
+  PHP_FE(ta_linearreg_slope, arginfo_ta_linearreg_slope)
+  PHP_FE(ta_stddev, arginfo_ta_stddev)
+  PHP_FE(ta_tsf, arginfo_ta_tsf)
+  PHP_FE(ta_var, arginfo_ta_var)
   PHP_FE(ta_bbands, arginfo_ta_bbands)
   PHP_FE_END
 };
@@ -2895,6 +3461,17 @@ PHP_MINIT_FUNCTION(ta)
   REGISTER_DOUBLE_CONSTANT("TA_REAL_MAX", TA_REAL_MAX, CONST_CS | CONST_PERSISTENT);
 
   REGISTER_LONG_CONSTANT("TA_HT_TRENDLINE_LOOKBACK", TA_HT_TRENDLINE_Lookback(), CONST_CS | CONST_PERSISTENT);
+  REGISTER_LONG_CONSTANT("TA_DEFAULT_PERIOD_BETA", 5, CONST_CS | CONST_PERSISTENT);
+  REGISTER_LONG_CONSTANT("TA_DEFAULT_PERIOD_CORREL", 30, CONST_CS | CONST_PERSISTENT);
+  REGISTER_LONG_CONSTANT("TA_DEFAULT_PERIOD_LINEARREG", 14, CONST_CS | CONST_PERSISTENT);
+  REGISTER_LONG_CONSTANT("TA_DEFAULT_PERIOD_LINEARREG_ANGLE", 14, CONST_CS | CONST_PERSISTENT);
+  REGISTER_LONG_CONSTANT("TA_DEFAULT_PERIOD_LINEARREG_INTERCEPT", 14, CONST_CS | CONST_PERSISTENT);
+  REGISTER_LONG_CONSTANT("TA_DEFAULT_PERIOD_LINEARREG_SLOPE", 14, CONST_CS | CONST_PERSISTENT);
+  REGISTER_LONG_CONSTANT("TA_DEFAULT_PERIOD_STDDEV", 5, CONST_CS | CONST_PERSISTENT);
+  REGISTER_LONG_CONSTANT("TA_DEFAULT_PERIOD_TSF", 14, CONST_CS | CONST_PERSISTENT);
+  REGISTER_LONG_CONSTANT("TA_DEFAULT_PERIOD_VAR", 5, CONST_CS | CONST_PERSISTENT);
+  REGISTER_DOUBLE_CONSTANT("TA_DEFAULT_NBDEV_STDDEV", 1.0, CONST_CS | CONST_PERSISTENT);
+  REGISTER_DOUBLE_CONSTANT("TA_DEFAULT_NBDEV_VAR", 1.0, CONST_CS | CONST_PERSISTENT);
 #endif
   return SUCCESS;
 }

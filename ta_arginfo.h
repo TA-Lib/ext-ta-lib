@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 894ae1b7f84fcc888974a1b9629f1be33e0bd675 */
+ * Stub hash: 8ac9035cb30b3db4d2973eb87828c257faf1b81a */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_ta_version, 0, 0, IS_STRING, 0)
 ZEND_END_ARG_INFO()
@@ -210,6 +210,36 @@ ZEND_END_ARG_INFO()
 #define arginfo_ta_ht_sine arginfo_ta_ht_trendline
 
 #define arginfo_ta_ht_trendmode arginfo_ta_ht_trendline
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_ta_beta, 0, 2, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO(0, valuesA, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO(0, valuesB, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, period, IS_LONG, 0, "5")
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_ta_correl, 0, 2, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO(0, valuesA, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO(0, valuesB, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, period, IS_LONG, 0, "30")
+ZEND_END_ARG_INFO()
+
+#define arginfo_ta_linearreg arginfo_ta_midpoint
+
+#define arginfo_ta_linearreg_angle arginfo_ta_midpoint
+
+#define arginfo_ta_linearreg_intercept arginfo_ta_midpoint
+
+#define arginfo_ta_linearreg_slope arginfo_ta_midpoint
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_ta_stddev, 0, 1, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO(0, values, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, period, IS_LONG, 0, "5")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, nbDev, IS_DOUBLE, 0, "1.0")
+ZEND_END_ARG_INFO()
+
+#define arginfo_ta_tsf arginfo_ta_midpoint
+
+#define arginfo_ta_var arginfo_ta_stddev
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_ta_bbands, 0, 1, IS_ARRAY, 0)
 	ZEND_ARG_TYPE_INFO(0, values, IS_ARRAY, 0)

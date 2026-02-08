@@ -560,6 +560,92 @@ function ta_ht_sine(array $values): array {}
  */
 function ta_ht_trendmode(array $values): array {}
 
+
+/**
+ * Beta (BETA).
+ *
+ * @param float[] $valuesA
+ * @param float[] $valuesB
+ * @param int $period Default 5
+ * @return array<int, float|null>
+ */
+function ta_beta(array $valuesA, array $valuesB, int $period = 5): array {}
+
+/**
+ * Pearson's Correlation Coefficient (CORREL).
+ *
+ * @param float[] $valuesA
+ * @param float[] $valuesB
+ * @param int $period Default 30
+ * @return array<int, float|null>
+ */
+function ta_correl(array $valuesA, array $valuesB, int $period = 30): array {}
+
+/**
+ * Linear Regression (LINEARREG).
+ *
+ * @param float[] $values
+ * @param int $period Default 14
+ * @return array<int, float|null>
+ */
+function ta_linearreg(array $values, int $period = 14): array {}
+
+/**
+ * Linear Regression Angle (LINEARREG_ANGLE).
+ *
+ * @param float[] $values
+ * @param int $period Default 14
+ * @return array<int, float|null>
+ */
+function ta_linearreg_angle(array $values, int $period = 14): array {}
+
+/**
+ * Linear Regression Intercept (LINEARREG_INTERCEPT).
+ *
+ * @param float[] $values
+ * @param int $period Default 14
+ * @return array<int, float|null>
+ */
+function ta_linearreg_intercept(array $values, int $period = 14): array {}
+
+/**
+ * Linear Regression Slope (LINEARREG_SLOPE).
+ *
+ * @param float[] $values
+ * @param int $period Default 14
+ * @return array<int, float|null>
+ */
+function ta_linearreg_slope(array $values, int $period = 14): array {}
+
+/**
+ * Standard Deviation (STDDEV).
+ *
+ * @param float[] $values
+ * @param int $period Default 5
+ * @param float $nbDev Default 1.0
+ * @return array<int, float|null>
+ */
+function ta_stddev(array $values, int $period = 5, float $nbDev = 1.0): array {}
+
+/**
+ * Time Series Forecast (TSF).
+ *
+ * @param float[] $values
+ * @param int $period Default 14
+ * @return array<int, float|null>
+ */
+function ta_tsf(array $values, int $period = 14): array {}
+
+/**
+ * Variance (VAR).
+ *
+ * @param float[] $values
+ * @param int $period Default 5
+ * @param float $nbDev Default 1.0
+ * @return array<int, float|null>
+ */
+function ta_var(array $values, int $period = 5, float $nbDev = 1.0): array {}
+
 /**
  * Bollinger Bands (BBANDS).
  *
