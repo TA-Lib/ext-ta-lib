@@ -124,6 +124,22 @@ static void ta_fill_three_outputs(zval *return_value, int out_beg, int out_nb, d
   add_assoc_zval(return_value, "lower", &lower);
 }
 
+static void ta_fill_three_outputs_named(zval *return_value, int out_beg, int out_nb, double *out_a, double *out_b, double *out_c, const char *key_a, const char *key_b, const char *key_c)
+{
+  zval a;
+  zval b;
+  zval c;
+
+  ta_fill_output_array(&a, out_beg, out_nb, out_a);
+  ta_fill_output_array(&b, out_beg, out_nb, out_b);
+  ta_fill_output_array(&c, out_beg, out_nb, out_c);
+
+  array_init(return_value);
+  add_assoc_zval(return_value, key_a, &a);
+  add_assoc_zval(return_value, key_b, &b);
+  add_assoc_zval(return_value, key_c, &c);
+}
+
 static void ta_fill_two_outputs(zval *return_value, int out_beg, int out_nb, double *out_a, double *out_b, const char *key_a, const char *key_b)
 {
   zval a;
@@ -2714,6 +2730,315 @@ PHP_FUNCTION(ta_ht_trendmode)
 #endif
 }
 
+PHP_FUNCTION(ta_cmo)
+{
+  zval *input = NULL;
+  zend_long period = 14;
+
+  ZEND_PARSE_PARAMETERS_START(1, 2)
+    Z_PARAM_ARRAY(input)
+    Z_PARAM_OPTIONAL
+    Z_PARAM_LONG(period)
+  ZEND_PARSE_PARAMETERS_END();
+
+#ifdef HAVE_TA
+  if (period < 2 || period > 100000) {
+    zend_throw_error(NULL, "Period must be between 2 and 100000");
+    RETURN_THROWS();
+  }
+
+  double *in_real = NULL;
+  int input_len = 0;
+  if (!ta_read_double_array(input, &in_real, &input_len, "ta_cmo")) {
+    RETURN_THROWS();
+  }
+
+  if (input_len <= 0) {
+    array_init(return_value);
+    return;
+  }
+
+  if (period > input_len) {
+    efree(in_real);
+    zend_throw_error(NULL, "Period must be <= number of input values");
+    RETURN_THROWS();
+  }
+
+  double *out_real = emalloc(sizeof(double) * input_len);
+  int out_beg = 0;
+  int out_nb = 0;
+  TA_RetCode rc = TA_CMO(0, input_len - 1, in_real, (int) period, &out_beg, &out_nb, out_real);
+
+  if (rc != TA_SUCCESS) {
+    efree(in_real);
+    efree(out_real);
+    zend_throw_error(NULL, "TA_CMO failed (code %d)", rc);
+    RETURN_THROWS();
+  }
+
+  ta_fill_output_array(return_value, out_beg, out_nb, out_real);
+
+  efree(in_real);
+  efree(out_real);
+#else
+  zend_throw_error(NULL, "TA-Lib not available");
+  RETURN_THROWS();
+#endif
+}
+
+PHP_FUNCTION(ta_macd)
+{
+  zval *input = NULL;
+  zend_long fast_period = 12;
+  zend_long slow_period = 26;
+  zend_long signal_period = 9;
+
+  ZEND_PARSE_PARAMETERS_START(1, 4)
+    Z_PARAM_ARRAY(input)
+    Z_PARAM_OPTIONAL
+    Z_PARAM_LONG(fast_period)
+    Z_PARAM_LONG(slow_period)
+    Z_PARAM_LONG(signal_period)
+  ZEND_PARSE_PARAMETERS_END();
+
+#ifdef HAVE_TA
+  if (fast_period < 2 || fast_period > 100000 || slow_period < 2 || slow_period > 100000) {
+    zend_throw_error(NULL, "Fast/Slow period must be between 2 and 100000");
+    RETURN_THROWS();
+  }
+  if (signal_period < 1 || signal_period > 100000) {
+    zend_throw_error(NULL, "Signal period must be between 1 and 100000");
+    RETURN_THROWS();
+  }
+
+  double *in_real = NULL;
+  int input_len = 0;
+  if (!ta_read_double_array(input, &in_real, &input_len, "ta_macd")) {
+    RETURN_THROWS();
+  }
+
+  if (input_len <= 0) {
+    zval macd;
+    zval signal;
+    zval hist;
+    array_init(&macd);
+    array_init(&signal);
+    array_init(&hist);
+    array_init(return_value);
+    add_assoc_zval(return_value, "macd", &macd);
+    add_assoc_zval(return_value, "signal", &signal);
+    add_assoc_zval(return_value, "hist", &hist);
+    return;
+  }
+
+  int max_period = (int) fast_period;
+  if (slow_period > max_period) {
+    max_period = (int) slow_period;
+  }
+  if (signal_period > max_period) {
+    max_period = (int) signal_period;
+  }
+  if (max_period > input_len) {
+    efree(in_real);
+    zend_throw_error(NULL, "Period must be <= number of input values");
+    RETURN_THROWS();
+  }
+
+  double *out_macd = emalloc(sizeof(double) * input_len);
+  double *out_signal = emalloc(sizeof(double) * input_len);
+  double *out_hist = emalloc(sizeof(double) * input_len);
+  int out_beg = 0;
+  int out_nb = 0;
+  TA_RetCode rc = TA_MACD(0, input_len - 1, in_real, (int) fast_period, (int) slow_period, (int) signal_period, &out_beg, &out_nb, out_macd, out_signal, out_hist);
+
+  if (rc != TA_SUCCESS) {
+    efree(in_real);
+    efree(out_macd);
+    efree(out_signal);
+    efree(out_hist);
+    zend_throw_error(NULL, "TA_MACD failed (code %d)", rc);
+    RETURN_THROWS();
+  }
+
+  ta_fill_three_outputs_named(return_value, out_beg, out_nb, out_macd, out_signal, out_hist, "macd", "signal", "hist");
+
+  efree(in_real);
+  efree(out_macd);
+  efree(out_signal);
+  efree(out_hist);
+#else
+  zend_throw_error(NULL, "TA-Lib not available");
+  RETURN_THROWS();
+#endif
+}
+
+PHP_FUNCTION(ta_macdext)
+{
+  zval *input = NULL;
+  zend_long fast_period = 12;
+  zend_long fast_ma_type = TA_MAType_SMA;
+  zend_long slow_period = 26;
+  zend_long slow_ma_type = TA_MAType_SMA;
+  zend_long signal_period = 9;
+  zend_long signal_ma_type = TA_MAType_SMA;
+
+  ZEND_PARSE_PARAMETERS_START(1, 7)
+    Z_PARAM_ARRAY(input)
+    Z_PARAM_OPTIONAL
+    Z_PARAM_LONG(fast_period)
+    Z_PARAM_LONG(fast_ma_type)
+    Z_PARAM_LONG(slow_period)
+    Z_PARAM_LONG(slow_ma_type)
+    Z_PARAM_LONG(signal_period)
+    Z_PARAM_LONG(signal_ma_type)
+  ZEND_PARSE_PARAMETERS_END();
+
+#ifdef HAVE_TA
+  if (fast_period < 2 || fast_period > 100000 || slow_period < 2 || slow_period > 100000) {
+    zend_throw_error(NULL, "Fast/Slow period must be between 2 and 100000");
+    RETURN_THROWS();
+  }
+  if (signal_period < 1 || signal_period > 100000) {
+    zend_throw_error(NULL, "Signal period must be between 1 and 100000");
+    RETURN_THROWS();
+  }
+  if (fast_ma_type < 0 || fast_ma_type > TA_MAType_T3 || slow_ma_type < 0 || slow_ma_type > TA_MAType_T3 || signal_ma_type < 0 || signal_ma_type > TA_MAType_T3) {
+    zend_throw_error(NULL, "MA type must be between TA_MA_TYPE_SMA and TA_MA_TYPE_T3");
+    RETURN_THROWS();
+  }
+
+  double *in_real = NULL;
+  int input_len = 0;
+  if (!ta_read_double_array(input, &in_real, &input_len, "ta_macdext")) {
+    RETURN_THROWS();
+  }
+
+  if (input_len <= 0) {
+    zval macd;
+    zval signal;
+    zval hist;
+    array_init(&macd);
+    array_init(&signal);
+    array_init(&hist);
+    array_init(return_value);
+    add_assoc_zval(return_value, "macd", &macd);
+    add_assoc_zval(return_value, "signal", &signal);
+    add_assoc_zval(return_value, "hist", &hist);
+    return;
+  }
+
+  int max_period = (int) fast_period;
+  if (slow_period > max_period) {
+    max_period = (int) slow_period;
+  }
+  if (signal_period > max_period) {
+    max_period = (int) signal_period;
+  }
+  if (max_period > input_len) {
+    efree(in_real);
+    zend_throw_error(NULL, "Period must be <= number of input values");
+    RETURN_THROWS();
+  }
+
+  double *out_macd = emalloc(sizeof(double) * input_len);
+  double *out_signal = emalloc(sizeof(double) * input_len);
+  double *out_hist = emalloc(sizeof(double) * input_len);
+  int out_beg = 0;
+  int out_nb = 0;
+  TA_RetCode rc = TA_MACDEXT(0, input_len - 1, in_real, (int) fast_period, (TA_MAType) fast_ma_type, (int) slow_period, (TA_MAType) slow_ma_type, (int) signal_period, (TA_MAType) signal_ma_type, &out_beg, &out_nb, out_macd, out_signal, out_hist);
+
+  if (rc != TA_SUCCESS) {
+    efree(in_real);
+    efree(out_macd);
+    efree(out_signal);
+    efree(out_hist);
+    zend_throw_error(NULL, "TA_MACDEXT failed (code %d)", rc);
+    RETURN_THROWS();
+  }
+
+  ta_fill_three_outputs_named(return_value, out_beg, out_nb, out_macd, out_signal, out_hist, "macd", "signal", "hist");
+
+  efree(in_real);
+  efree(out_macd);
+  efree(out_signal);
+  efree(out_hist);
+#else
+  zend_throw_error(NULL, "TA-Lib not available");
+  RETURN_THROWS();
+#endif
+}
+
+PHP_FUNCTION(ta_macdfix)
+{
+  zval *input = NULL;
+  zend_long signal_period = 9;
+
+  ZEND_PARSE_PARAMETERS_START(1, 2)
+    Z_PARAM_ARRAY(input)
+    Z_PARAM_OPTIONAL
+    Z_PARAM_LONG(signal_period)
+  ZEND_PARSE_PARAMETERS_END();
+
+#ifdef HAVE_TA
+  if (signal_period < 1 || signal_period > 100000) {
+    zend_throw_error(NULL, "Signal period must be between 1 and 100000");
+    RETURN_THROWS();
+  }
+
+  double *in_real = NULL;
+  int input_len = 0;
+  if (!ta_read_double_array(input, &in_real, &input_len, "ta_macdfix")) {
+    RETURN_THROWS();
+  }
+
+  if (input_len <= 0) {
+    zval macd;
+    zval signal;
+    zval hist;
+    array_init(&macd);
+    array_init(&signal);
+    array_init(&hist);
+    array_init(return_value);
+    add_assoc_zval(return_value, "macd", &macd);
+    add_assoc_zval(return_value, "signal", &signal);
+    add_assoc_zval(return_value, "hist", &hist);
+    return;
+  }
+
+  if (signal_period > input_len) {
+    efree(in_real);
+    zend_throw_error(NULL, "Period must be <= number of input values");
+    RETURN_THROWS();
+  }
+
+  double *out_macd = emalloc(sizeof(double) * input_len);
+  double *out_signal = emalloc(sizeof(double) * input_len);
+  double *out_hist = emalloc(sizeof(double) * input_len);
+  int out_beg = 0;
+  int out_nb = 0;
+  TA_RetCode rc = TA_MACDFIX(0, input_len - 1, in_real, (int) signal_period, &out_beg, &out_nb, out_macd, out_signal, out_hist);
+
+  if (rc != TA_SUCCESS) {
+    efree(in_real);
+    efree(out_macd);
+    efree(out_signal);
+    efree(out_hist);
+    zend_throw_error(NULL, "TA_MACDFIX failed (code %d)", rc);
+    RETURN_THROWS();
+  }
+
+  ta_fill_three_outputs_named(return_value, out_beg, out_nb, out_macd, out_signal, out_hist, "macd", "signal", "hist");
+
+  efree(in_real);
+  efree(out_macd);
+  efree(out_signal);
+  efree(out_hist);
+#else
+  zend_throw_error(NULL, "TA-Lib not available");
+  RETURN_THROWS();
+#endif
+}
+
 
 PHP_FUNCTION(ta_beta)
 {
@@ -3429,6 +3754,10 @@ static const zend_function_entry ta_functions[] = {
   PHP_FE(ta_ht_phasor, arginfo_ta_ht_phasor)
   PHP_FE(ta_ht_sine, arginfo_ta_ht_sine)
   PHP_FE(ta_ht_trendmode, arginfo_ta_ht_trendmode)
+  PHP_FE(ta_cmo, arginfo_ta_cmo)
+  PHP_FE(ta_macd, arginfo_ta_macd)
+  PHP_FE(ta_macdext, arginfo_ta_macdext)
+  PHP_FE(ta_macdfix, arginfo_ta_macdfix)
   PHP_FE(ta_beta, arginfo_ta_beta)
   PHP_FE(ta_correl, arginfo_ta_correl)
   PHP_FE(ta_linearreg, arginfo_ta_linearreg)

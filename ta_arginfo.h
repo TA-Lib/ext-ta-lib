@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 8ac9035cb30b3db4d2973eb87828c257faf1b81a */
+ * Stub hash: d76cc38fb233c9b10fda2242bfaeaece19cd9b77 */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_ta_version, 0, 0, IS_STRING, 0)
 ZEND_END_ARG_INFO()
@@ -210,6 +210,30 @@ ZEND_END_ARG_INFO()
 #define arginfo_ta_ht_sine arginfo_ta_ht_trendline
 
 #define arginfo_ta_ht_trendmode arginfo_ta_ht_trendline
+
+#define arginfo_ta_cmo arginfo_ta_midpoint
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_ta_macd, 0, 1, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO(0, values, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, fastPeriod, IS_LONG, 0, "12")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, slowPeriod, IS_LONG, 0, "26")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, signalPeriod, IS_LONG, 0, "9")
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_ta_macdext, 0, 1, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO(0, values, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, fastPeriod, IS_LONG, 0, "12")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, fastMaType, IS_LONG, 0, "TA_MA_TYPE_SMA")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, slowPeriod, IS_LONG, 0, "26")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, slowMaType, IS_LONG, 0, "TA_MA_TYPE_SMA")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, signalPeriod, IS_LONG, 0, "9")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, signalMaType, IS_LONG, 0, "TA_MA_TYPE_SMA")
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_ta_macdfix, 0, 1, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO(0, values, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, signalPeriod, IS_LONG, 0, "9")
+ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_ta_beta, 0, 2, IS_ARRAY, 0)
 	ZEND_ARG_TYPE_INFO(0, valuesA, IS_ARRAY, 0)

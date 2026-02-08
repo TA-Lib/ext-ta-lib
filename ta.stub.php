@@ -560,6 +560,58 @@ function ta_ht_sine(array $values): array {}
  */
 function ta_ht_trendmode(array $values): array {}
 
+/**
+ * Chande Momentum Oscillator (CMO).
+ *
+ * @param float[] $values
+ * @param int $period Default 14
+ * @return array<int, float|null>
+ */
+function ta_cmo(array $values, int $period = 14): array {}
+
+
+/**
+ * Moving Average Convergence/Divergence (MACD).
+ *
+ * @param float[] $values
+ * @param int $fastPeriod Default 12
+ * @param int $slowPeriod Default 26
+ * @param int $signalPeriod Default 9
+ * @return array{macd: array<int, float|null>, signal: array<int, float|null>, hist: array<int, float|null>}
+ */
+function ta_macd(array $values, int $fastPeriod = 12, int $slowPeriod = 26, int $signalPeriod = 9): array {}
+
+/**
+ * MACD with controllable MA type (MACDEXT).
+ *
+ * @param float[] $values
+ * @param int $fastPeriod Default 12
+ * @param int $fastMaType Default TA_MA_TYPE_SMA
+ * @param int $slowPeriod Default 26
+ * @param int $slowMaType Default TA_MA_TYPE_SMA
+ * @param int $signalPeriod Default 9
+ * @param int $signalMaType Default TA_MA_TYPE_SMA
+ * @return array{macd: array<int, float|null>, signal: array<int, float|null>, hist: array<int, float|null>}
+ */
+function ta_macdext(
+    array $values,
+    int $fastPeriod = 12,
+    int $fastMaType = TA_MA_TYPE_SMA,
+    int $slowPeriod = 26,
+    int $slowMaType = TA_MA_TYPE_SMA,
+    int $signalPeriod = 9,
+    int $signalMaType = TA_MA_TYPE_SMA
+): array {}
+
+/**
+ * MACD Fix 12/26 (MACDFIX).
+ *
+ * @param float[] $values
+ * @param int $signalPeriod Default 9
+ * @return array{macd: array<int, float|null>, signal: array<int, float|null>, hist: array<int, float|null>}
+ */
+function ta_macdfix(array $values, int $signalPeriod = 9): array {}
+
 
 /**
  * Beta (BETA).
