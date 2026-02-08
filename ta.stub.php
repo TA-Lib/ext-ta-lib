@@ -614,6 +614,69 @@ function ta_macdfix(array $values, int $signalPeriod = 9): array {}
 
 
 /**
+ * Stochastic Oscillator (STOCH).
+ *
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @param int $fastKPeriod Default 5
+ * @param int $slowKPeriod Default 3
+ * @param int $slowKMaType Default TA_MA_TYPE_SMA
+ * @param int $slowDPeriod Default 3
+ * @param int $slowDMaType Default TA_MA_TYPE_SMA
+ * @return array{slowk: array<int, float|null>, slowd: array<int, float|null>}
+ */
+function ta_stoch(
+    array $high,
+    array $low,
+    array $close,
+    int $fastKPeriod = 5,
+    int $slowKPeriod = 3,
+    int $slowKMaType = TA_MA_TYPE_SMA,
+    int $slowDPeriod = 3,
+    int $slowDMaType = TA_MA_TYPE_SMA
+): array {}
+
+/**
+ * Stochastic Fast (STOCHF).
+ *
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @param int $fastKPeriod Default 5
+ * @param int $fastDPeriod Default 3
+ * @param int $fastDMaType Default TA_MA_TYPE_SMA
+ * @return array{fastk: array<int, float|null>, fastd: array<int, float|null>}
+ */
+function ta_stochf(
+    array $high,
+    array $low,
+    array $close,
+    int $fastKPeriod = 5,
+    int $fastDPeriod = 3,
+    int $fastDMaType = TA_MA_TYPE_SMA
+): array {}
+
+/**
+ * Stochastic Relative Strength Index (STOCHRSI).
+ *
+ * @param float[] $values
+ * @param int $period Default 14
+ * @param int $fastKPeriod Default 5
+ * @param int $fastDPeriod Default 3
+ * @param int $fastDMaType Default TA_MA_TYPE_SMA
+ * @return array{fastk: array<int, float|null>, fastd: array<int, float|null>}
+ */
+function ta_stochrsi(
+    array $values,
+    int $period = 14,
+    int $fastKPeriod = 5,
+    int $fastDPeriod = 3,
+    int $fastDMaType = TA_MA_TYPE_SMA
+): array {}
+
+
+/**
  * Beta (BETA).
  *
  * @param float[] $valuesA

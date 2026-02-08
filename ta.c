@@ -3039,6 +3039,323 @@ PHP_FUNCTION(ta_macdfix)
 #endif
 }
 
+PHP_FUNCTION(ta_stoch)
+{
+  zval *high = NULL;
+  zval *low = NULL;
+  zval *close = NULL;
+  zend_long fast_k = 5;
+  zend_long slow_k = 3;
+  zend_long slow_k_ma_type = TA_MAType_SMA;
+  zend_long slow_d = 3;
+  zend_long slow_d_ma_type = TA_MAType_SMA;
+
+  ZEND_PARSE_PARAMETERS_START(3, 8)
+    Z_PARAM_ARRAY(high)
+    Z_PARAM_ARRAY(low)
+    Z_PARAM_ARRAY(close)
+    Z_PARAM_OPTIONAL
+    Z_PARAM_LONG(fast_k)
+    Z_PARAM_LONG(slow_k)
+    Z_PARAM_LONG(slow_k_ma_type)
+    Z_PARAM_LONG(slow_d)
+    Z_PARAM_LONG(slow_d_ma_type)
+  ZEND_PARSE_PARAMETERS_END();
+
+#ifdef HAVE_TA
+  if (fast_k < 1 || fast_k > 100000 || slow_k < 1 || slow_k > 100000 || slow_d < 1 || slow_d > 100000) {
+    zend_throw_error(NULL, "Periods must be between 1 and 100000");
+    RETURN_THROWS();
+  }
+  if (slow_k_ma_type < 0 || slow_k_ma_type > TA_MAType_T3 || slow_d_ma_type < 0 || slow_d_ma_type > TA_MAType_T3) {
+    zend_throw_error(NULL, "MA type must be between TA_MA_TYPE_SMA and TA_MA_TYPE_T3");
+    RETURN_THROWS();
+  }
+
+  double *in_high = NULL;
+  double *in_low = NULL;
+  double *in_close = NULL;
+  int len_high = 0;
+  int len_low = 0;
+  int len_close = 0;
+
+  if (!ta_read_double_array(high, &in_high, &len_high, "ta_stoch")) {
+    RETURN_THROWS();
+  }
+  if (!ta_read_double_array(low, &in_low, &len_low, "ta_stoch")) {
+    if (in_high) efree(in_high);
+    RETURN_THROWS();
+  }
+  if (!ta_read_double_array(close, &in_close, &len_close, "ta_stoch")) {
+    if (in_high) efree(in_high);
+    if (in_low) efree(in_low);
+    RETURN_THROWS();
+  }
+
+  if (len_high <= 0 || len_low <= 0 || len_close <= 0) {
+    if (in_high) efree(in_high);
+    if (in_low) efree(in_low);
+    if (in_close) efree(in_close);
+    zval slowk;
+    zval slowd;
+    array_init(&slowk);
+    array_init(&slowd);
+    array_init(return_value);
+    add_assoc_zval(return_value, "slowk", &slowk);
+    add_assoc_zval(return_value, "slowd", &slowd);
+    return;
+  }
+
+  if (len_high != len_low || len_high != len_close) {
+    efree(in_high);
+    efree(in_low);
+    efree(in_close);
+    zend_throw_error(NULL, "Input arrays must have the same length");
+    RETURN_THROWS();
+  }
+
+  int max_period = (int) fast_k;
+  if (slow_k > max_period) {
+    max_period = (int) slow_k;
+  }
+  if (slow_d > max_period) {
+    max_period = (int) slow_d;
+  }
+  if (max_period > len_high) {
+    efree(in_high);
+    efree(in_low);
+    efree(in_close);
+    zend_throw_error(NULL, "Period must be <= number of input values");
+    RETURN_THROWS();
+  }
+
+  double *out_slowk = emalloc(sizeof(double) * len_high);
+  double *out_slowd = emalloc(sizeof(double) * len_high);
+  int out_beg = 0;
+  int out_nb = 0;
+  TA_RetCode rc = TA_STOCH(0, len_high - 1, in_high, in_low, in_close, (int) fast_k, (int) slow_k, (TA_MAType) slow_k_ma_type, (int) slow_d, (TA_MAType) slow_d_ma_type, &out_beg, &out_nb, out_slowk, out_slowd);
+
+  if (rc != TA_SUCCESS) {
+    efree(in_high);
+    efree(in_low);
+    efree(in_close);
+    efree(out_slowk);
+    efree(out_slowd);
+    zend_throw_error(NULL, "TA_STOCH failed (code %d)", rc);
+    RETURN_THROWS();
+  }
+
+  ta_fill_two_outputs(return_value, out_beg, out_nb, out_slowk, out_slowd, "slowk", "slowd");
+
+  efree(in_high);
+  efree(in_low);
+  efree(in_close);
+  efree(out_slowk);
+  efree(out_slowd);
+#else
+  zend_throw_error(NULL, "TA-Lib not available");
+  RETURN_THROWS();
+#endif
+}
+
+PHP_FUNCTION(ta_stochf)
+{
+  zval *high = NULL;
+  zval *low = NULL;
+  zval *close = NULL;
+  zend_long fast_k = 5;
+  zend_long fast_d = 3;
+  zend_long fast_d_ma_type = TA_MAType_SMA;
+
+  ZEND_PARSE_PARAMETERS_START(3, 6)
+    Z_PARAM_ARRAY(high)
+    Z_PARAM_ARRAY(low)
+    Z_PARAM_ARRAY(close)
+    Z_PARAM_OPTIONAL
+    Z_PARAM_LONG(fast_k)
+    Z_PARAM_LONG(fast_d)
+    Z_PARAM_LONG(fast_d_ma_type)
+  ZEND_PARSE_PARAMETERS_END();
+
+#ifdef HAVE_TA
+  if (fast_k < 1 || fast_k > 100000 || fast_d < 1 || fast_d > 100000) {
+    zend_throw_error(NULL, "Periods must be between 1 and 100000");
+    RETURN_THROWS();
+  }
+  if (fast_d_ma_type < 0 || fast_d_ma_type > TA_MAType_T3) {
+    zend_throw_error(NULL, "MA type must be between TA_MA_TYPE_SMA and TA_MA_TYPE_T3");
+    RETURN_THROWS();
+  }
+
+  double *in_high = NULL;
+  double *in_low = NULL;
+  double *in_close = NULL;
+  int len_high = 0;
+  int len_low = 0;
+  int len_close = 0;
+
+  if (!ta_read_double_array(high, &in_high, &len_high, "ta_stochf")) {
+    RETURN_THROWS();
+  }
+  if (!ta_read_double_array(low, &in_low, &len_low, "ta_stochf")) {
+    if (in_high) efree(in_high);
+    RETURN_THROWS();
+  }
+  if (!ta_read_double_array(close, &in_close, &len_close, "ta_stochf")) {
+    if (in_high) efree(in_high);
+    if (in_low) efree(in_low);
+    RETURN_THROWS();
+  }
+
+  if (len_high <= 0 || len_low <= 0 || len_close <= 0) {
+    if (in_high) efree(in_high);
+    if (in_low) efree(in_low);
+    if (in_close) efree(in_close);
+    zval fastk;
+    zval fastd;
+    array_init(&fastk);
+    array_init(&fastd);
+    array_init(return_value);
+    add_assoc_zval(return_value, "fastk", &fastk);
+    add_assoc_zval(return_value, "fastd", &fastd);
+    return;
+  }
+
+  if (len_high != len_low || len_high != len_close) {
+    efree(in_high);
+    efree(in_low);
+    efree(in_close);
+    zend_throw_error(NULL, "Input arrays must have the same length");
+    RETURN_THROWS();
+  }
+
+  int max_period = (int) fast_k;
+  if (fast_d > max_period) {
+    max_period = (int) fast_d;
+  }
+  if (max_period > len_high) {
+    efree(in_high);
+    efree(in_low);
+    efree(in_close);
+    zend_throw_error(NULL, "Period must be <= number of input values");
+    RETURN_THROWS();
+  }
+
+  double *out_fastk = emalloc(sizeof(double) * len_high);
+  double *out_fastd = emalloc(sizeof(double) * len_high);
+  int out_beg = 0;
+  int out_nb = 0;
+  TA_RetCode rc = TA_STOCHF(0, len_high - 1, in_high, in_low, in_close, (int) fast_k, (int) fast_d, (TA_MAType) fast_d_ma_type, &out_beg, &out_nb, out_fastk, out_fastd);
+
+  if (rc != TA_SUCCESS) {
+    efree(in_high);
+    efree(in_low);
+    efree(in_close);
+    efree(out_fastk);
+    efree(out_fastd);
+    zend_throw_error(NULL, "TA_STOCHF failed (code %d)", rc);
+    RETURN_THROWS();
+  }
+
+  ta_fill_two_outputs(return_value, out_beg, out_nb, out_fastk, out_fastd, "fastk", "fastd");
+
+  efree(in_high);
+  efree(in_low);
+  efree(in_close);
+  efree(out_fastk);
+  efree(out_fastd);
+#else
+  zend_throw_error(NULL, "TA-Lib not available");
+  RETURN_THROWS();
+#endif
+}
+
+PHP_FUNCTION(ta_stochrsi)
+{
+  zval *input = NULL;
+  zend_long period = 14;
+  zend_long fast_k = 5;
+  zend_long fast_d = 3;
+  zend_long fast_d_ma_type = TA_MAType_SMA;
+
+  ZEND_PARSE_PARAMETERS_START(1, 5)
+    Z_PARAM_ARRAY(input)
+    Z_PARAM_OPTIONAL
+    Z_PARAM_LONG(period)
+    Z_PARAM_LONG(fast_k)
+    Z_PARAM_LONG(fast_d)
+    Z_PARAM_LONG(fast_d_ma_type)
+  ZEND_PARSE_PARAMETERS_END();
+
+#ifdef HAVE_TA
+  if (period < 2 || period > 100000) {
+    zend_throw_error(NULL, "Period must be between 2 and 100000");
+    RETURN_THROWS();
+  }
+  if (fast_k < 1 || fast_k > 100000 || fast_d < 1 || fast_d > 100000) {
+    zend_throw_error(NULL, "Periods must be between 1 and 100000");
+    RETURN_THROWS();
+  }
+  if (fast_d_ma_type < 0 || fast_d_ma_type > TA_MAType_T3) {
+    zend_throw_error(NULL, "MA type must be between TA_MA_TYPE_SMA and TA_MA_TYPE_T3");
+    RETURN_THROWS();
+  }
+
+  double *in_real = NULL;
+  int input_len = 0;
+  if (!ta_read_double_array(input, &in_real, &input_len, "ta_stochrsi")) {
+    RETURN_THROWS();
+  }
+
+  if (input_len <= 0) {
+    zval fastk;
+    zval fastd;
+    array_init(&fastk);
+    array_init(&fastd);
+    array_init(return_value);
+    add_assoc_zval(return_value, "fastk", &fastk);
+    add_assoc_zval(return_value, "fastd", &fastd);
+    return;
+  }
+
+  int max_period = (int) period;
+  if (fast_k > max_period) {
+    max_period = (int) fast_k;
+  }
+  if (fast_d > max_period) {
+    max_period = (int) fast_d;
+  }
+  if (max_period > input_len) {
+    efree(in_real);
+    zend_throw_error(NULL, "Period must be <= number of input values");
+    RETURN_THROWS();
+  }
+
+  double *out_fastk = emalloc(sizeof(double) * input_len);
+  double *out_fastd = emalloc(sizeof(double) * input_len);
+  int out_beg = 0;
+  int out_nb = 0;
+  TA_RetCode rc = TA_STOCHRSI(0, input_len - 1, in_real, (int) period, (int) fast_k, (int) fast_d, (TA_MAType) fast_d_ma_type, &out_beg, &out_nb, out_fastk, out_fastd);
+
+  if (rc != TA_SUCCESS) {
+    efree(in_real);
+    efree(out_fastk);
+    efree(out_fastd);
+    zend_throw_error(NULL, "TA_STOCHRSI failed (code %d)", rc);
+    RETURN_THROWS();
+  }
+
+  ta_fill_two_outputs(return_value, out_beg, out_nb, out_fastk, out_fastd, "fastk", "fastd");
+
+  efree(in_real);
+  efree(out_fastk);
+  efree(out_fastd);
+#else
+  zend_throw_error(NULL, "TA-Lib not available");
+  RETURN_THROWS();
+#endif
+}
+
 
 PHP_FUNCTION(ta_beta)
 {
@@ -3758,6 +4075,9 @@ static const zend_function_entry ta_functions[] = {
   PHP_FE(ta_macd, arginfo_ta_macd)
   PHP_FE(ta_macdext, arginfo_ta_macdext)
   PHP_FE(ta_macdfix, arginfo_ta_macdfix)
+  PHP_FE(ta_stoch, arginfo_ta_stoch)
+  PHP_FE(ta_stochf, arginfo_ta_stochf)
+  PHP_FE(ta_stochrsi, arginfo_ta_stochrsi)
   PHP_FE(ta_beta, arginfo_ta_beta)
   PHP_FE(ta_correl, arginfo_ta_correl)
   PHP_FE(ta_linearreg, arginfo_ta_linearreg)
