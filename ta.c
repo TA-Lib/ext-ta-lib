@@ -166,6 +166,191 @@ static void ta_fill_two_outputs_int(zval *return_value, int out_beg, int out_nb,
   add_assoc_zval(return_value, key_b, &b);
 }
 
+
+typedef TA_RetCode (*ta_pattern_fn)(int, int, const double[], const double[], const double[], const double[], int*, int*, int[]);
+typedef TA_RetCode (*ta_pattern_pen_fn)(int, int, const double[], const double[], const double[], const double[], double, int*, int*, int[]);
+
+static void ta_pattern_common(INTERNAL_FUNCTION_PARAMETERS, const char *fn_name, ta_pattern_fn fn)
+{
+  zval *open = NULL;
+  zval *high = NULL;
+  zval *low = NULL;
+  zval *close = NULL;
+
+  ZEND_PARSE_PARAMETERS_START(4, 4)
+    Z_PARAM_ARRAY(open)
+    Z_PARAM_ARRAY(high)
+    Z_PARAM_ARRAY(low)
+    Z_PARAM_ARRAY(close)
+  ZEND_PARSE_PARAMETERS_END();
+
+#ifdef HAVE_TA
+  double *in_open = NULL;
+  double *in_high = NULL;
+  double *in_low = NULL;
+  double *in_close = NULL;
+  int len_open = 0;
+  int len_high = 0;
+  int len_low = 0;
+  int len_close = 0;
+
+  if (!ta_read_double_array(open, &in_open, &len_open, fn_name)) {
+    RETURN_THROWS();
+  }
+  if (!ta_read_double_array(high, &in_high, &len_high, fn_name)) {
+    if (in_open) efree(in_open);
+    RETURN_THROWS();
+  }
+  if (!ta_read_double_array(low, &in_low, &len_low, fn_name)) {
+    if (in_open) efree(in_open);
+    if (in_high) efree(in_high);
+    RETURN_THROWS();
+  }
+  if (!ta_read_double_array(close, &in_close, &len_close, fn_name)) {
+    if (in_open) efree(in_open);
+    if (in_high) efree(in_high);
+    if (in_low) efree(in_low);
+    RETURN_THROWS();
+  }
+
+  if (len_open <= 0 || len_high <= 0 || len_low <= 0 || len_close <= 0) {
+    if (in_open) efree(in_open);
+    if (in_high) efree(in_high);
+    if (in_low) efree(in_low);
+    if (in_close) efree(in_close);
+    array_init(return_value);
+    return;
+  }
+
+  if (len_open != len_high || len_open != len_low || len_open != len_close) {
+    efree(in_open);
+    efree(in_high);
+    efree(in_low);
+    efree(in_close);
+    zend_throw_error(NULL, "Input arrays must have the same length");
+    RETURN_THROWS();
+  }
+
+  int *out_int = emalloc(sizeof(int) * len_open);
+  int out_beg = 0;
+  int out_nb = 0;
+  TA_RetCode rc = fn(0, len_open - 1, in_open, in_high, in_low, in_close, &out_beg, &out_nb, out_int);
+
+  if (rc != TA_SUCCESS) {
+    efree(in_open);
+    efree(in_high);
+    efree(in_low);
+    efree(in_close);
+    efree(out_int);
+    zend_throw_error(NULL, "%s failed (code %d)", fn_name, rc);
+    RETURN_THROWS();
+  }
+
+  ta_fill_output_array_int(return_value, out_beg, out_nb, out_int);
+
+  efree(in_open);
+  efree(in_high);
+  efree(in_low);
+  efree(in_close);
+  efree(out_int);
+#else
+  zend_throw_error(NULL, "TA-Lib not available");
+  RETURN_THROWS();
+#endif
+}
+
+static void ta_pattern_common_penetration(INTERNAL_FUNCTION_PARAMETERS, const char *fn_name, ta_pattern_pen_fn fn)
+{
+  zval *open = NULL;
+  zval *high = NULL;
+  zval *low = NULL;
+  zval *close = NULL;
+  double penetration = 0.0;
+
+  ZEND_PARSE_PARAMETERS_START(4, 5)
+    Z_PARAM_ARRAY(open)
+    Z_PARAM_ARRAY(high)
+    Z_PARAM_ARRAY(low)
+    Z_PARAM_ARRAY(close)
+    Z_PARAM_OPTIONAL
+    Z_PARAM_DOUBLE(penetration)
+  ZEND_PARSE_PARAMETERS_END();
+
+#ifdef HAVE_TA
+  double *in_open = NULL;
+  double *in_high = NULL;
+  double *in_low = NULL;
+  double *in_close = NULL;
+  int len_open = 0;
+  int len_high = 0;
+  int len_low = 0;
+  int len_close = 0;
+
+  if (!ta_read_double_array(open, &in_open, &len_open, fn_name)) {
+    RETURN_THROWS();
+  }
+  if (!ta_read_double_array(high, &in_high, &len_high, fn_name)) {
+    if (in_open) efree(in_open);
+    RETURN_THROWS();
+  }
+  if (!ta_read_double_array(low, &in_low, &len_low, fn_name)) {
+    if (in_open) efree(in_open);
+    if (in_high) efree(in_high);
+    RETURN_THROWS();
+  }
+  if (!ta_read_double_array(close, &in_close, &len_close, fn_name)) {
+    if (in_open) efree(in_open);
+    if (in_high) efree(in_high);
+    if (in_low) efree(in_low);
+    RETURN_THROWS();
+  }
+
+  if (len_open <= 0 || len_high <= 0 || len_low <= 0 || len_close <= 0) {
+    if (in_open) efree(in_open);
+    if (in_high) efree(in_high);
+    if (in_low) efree(in_low);
+    if (in_close) efree(in_close);
+    array_init(return_value);
+    return;
+  }
+
+  if (len_open != len_high || len_open != len_low || len_open != len_close) {
+    efree(in_open);
+    efree(in_high);
+    efree(in_low);
+    efree(in_close);
+    zend_throw_error(NULL, "Input arrays must have the same length");
+    RETURN_THROWS();
+  }
+
+  int *out_int = emalloc(sizeof(int) * len_open);
+  int out_beg = 0;
+  int out_nb = 0;
+  TA_RetCode rc = fn(0, len_open - 1, in_open, in_high, in_low, in_close, penetration, &out_beg, &out_nb, out_int);
+
+  if (rc != TA_SUCCESS) {
+    efree(in_open);
+    efree(in_high);
+    efree(in_low);
+    efree(in_close);
+    efree(out_int);
+    zend_throw_error(NULL, "%s failed (code %d)", fn_name, rc);
+    RETURN_THROWS();
+  }
+
+  ta_fill_output_array_int(return_value, out_beg, out_nb, out_int);
+
+  efree(in_open);
+  efree(in_high);
+  efree(in_low);
+  efree(in_close);
+  efree(out_int);
+#else
+  zend_throw_error(NULL, "TA-Lib not available");
+  RETURN_THROWS();
+#endif
+}
+
 static void ta_ma_period_common(INTERNAL_FUNCTION_PARAMETERS, const char *fn_name, ta_ma_fn fn)
 {
   zval *input = NULL;
@@ -5158,6 +5343,311 @@ PHP_FUNCTION(ta_willr)
 #endif
 }
 
+PHP_FUNCTION(ta_cdl2crows)
+{
+  ta_pattern_common(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdl2crows", TA_CDL2CROWS);
+}
+
+PHP_FUNCTION(ta_cdl3blackcrows)
+{
+  ta_pattern_common(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdl3blackcrows", TA_CDL3BLACKCROWS);
+}
+
+PHP_FUNCTION(ta_cdl3inside)
+{
+  ta_pattern_common(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdl3inside", TA_CDL3INSIDE);
+}
+
+PHP_FUNCTION(ta_cdl3linestrike)
+{
+  ta_pattern_common(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdl3linestrike", TA_CDL3LINESTRIKE);
+}
+
+PHP_FUNCTION(ta_cdl3outside)
+{
+  ta_pattern_common(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdl3outside", TA_CDL3OUTSIDE);
+}
+
+PHP_FUNCTION(ta_cdl3starsinsouth)
+{
+  ta_pattern_common(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdl3starsinsouth", TA_CDL3STARSINSOUTH);
+}
+
+PHP_FUNCTION(ta_cdl3whitesoldiers)
+{
+  ta_pattern_common(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdl3whitesoldiers", TA_CDL3WHITESOLDIERS);
+}
+
+PHP_FUNCTION(ta_cdlabandonedbaby)
+{
+  ta_pattern_common_penetration(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdlabandonedbaby", TA_CDLABANDONEDBABY);
+}
+
+PHP_FUNCTION(ta_cdladvanceblock)
+{
+  ta_pattern_common(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdladvanceblock", TA_CDLADVANCEBLOCK);
+}
+
+PHP_FUNCTION(ta_cdlbelthold)
+{
+  ta_pattern_common(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdlbelthold", TA_CDLBELTHOLD);
+}
+
+PHP_FUNCTION(ta_cdlbreakaway)
+{
+  ta_pattern_common(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdlbreakaway", TA_CDLBREAKAWAY);
+}
+
+PHP_FUNCTION(ta_cdlclosingmarubozu)
+{
+  ta_pattern_common(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdlclosingmarubozu", TA_CDLCLOSINGMARUBOZU);
+}
+
+PHP_FUNCTION(ta_cdlconcealbabyswall)
+{
+  ta_pattern_common(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdlconcealbabyswall", TA_CDLCONCEALBABYSWALL);
+}
+
+PHP_FUNCTION(ta_cdlcounterattack)
+{
+  ta_pattern_common(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdlcounterattack", TA_CDLCOUNTERATTACK);
+}
+
+PHP_FUNCTION(ta_cdldarkcloudcover)
+{
+  ta_pattern_common_penetration(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdldarkcloudcover", TA_CDLDARKCLOUDCOVER);
+}
+
+PHP_FUNCTION(ta_cdldoji)
+{
+  ta_pattern_common(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdldoji", TA_CDLDOJI);
+}
+
+PHP_FUNCTION(ta_cdldojistar)
+{
+  ta_pattern_common(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdldojistar", TA_CDLDOJISTAR);
+}
+
+PHP_FUNCTION(ta_cdldragonflydoji)
+{
+  ta_pattern_common(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdldragonflydoji", TA_CDLDRAGONFLYDOJI);
+}
+
+PHP_FUNCTION(ta_cdlengulfing)
+{
+  ta_pattern_common(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdlengulfing", TA_CDLENGULFING);
+}
+
+PHP_FUNCTION(ta_cdleveningdojistar)
+{
+  ta_pattern_common_penetration(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdleveningdojistar", TA_CDLEVENINGDOJISTAR);
+}
+
+PHP_FUNCTION(ta_cdleveningstar)
+{
+  ta_pattern_common_penetration(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdleveningstar", TA_CDLEVENINGSTAR);
+}
+
+PHP_FUNCTION(ta_cdlgapsidesidewhite)
+{
+  ta_pattern_common(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdlgapsidesidewhite", TA_CDLGAPSIDESIDEWHITE);
+}
+
+PHP_FUNCTION(ta_cdlgravestonedoji)
+{
+  ta_pattern_common(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdlgravestonedoji", TA_CDLGRAVESTONEDOJI);
+}
+
+PHP_FUNCTION(ta_cdlhammer)
+{
+  ta_pattern_common(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdlhammer", TA_CDLHAMMER);
+}
+
+PHP_FUNCTION(ta_cdlhangingman)
+{
+  ta_pattern_common(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdlhangingman", TA_CDLHANGINGMAN);
+}
+
+PHP_FUNCTION(ta_cdlharami)
+{
+  ta_pattern_common(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdlharami", TA_CDLHARAMI);
+}
+
+PHP_FUNCTION(ta_cdlharamicross)
+{
+  ta_pattern_common(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdlharamicross", TA_CDLHARAMICROSS);
+}
+
+PHP_FUNCTION(ta_cdlhighwave)
+{
+  ta_pattern_common(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdlhighwave", TA_CDLHIGHWAVE);
+}
+
+PHP_FUNCTION(ta_cdlhikkake)
+{
+  ta_pattern_common(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdlhikkake", TA_CDLHIKKAKE);
+}
+
+PHP_FUNCTION(ta_cdlhikkakemod)
+{
+  ta_pattern_common(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdlhikkakemod", TA_CDLHIKKAKEMOD);
+}
+
+PHP_FUNCTION(ta_cdlhomingpigeon)
+{
+  ta_pattern_common(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdlhomingpigeon", TA_CDLHOMINGPIGEON);
+}
+
+PHP_FUNCTION(ta_cdlidentical3crows)
+{
+  ta_pattern_common(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdlidentical3crows", TA_CDLIDENTICAL3CROWS);
+}
+
+PHP_FUNCTION(ta_cdlinneck)
+{
+  ta_pattern_common(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdlinneck", TA_CDLINNECK);
+}
+
+PHP_FUNCTION(ta_cdlinvertedhammer)
+{
+  ta_pattern_common(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdlinvertedhammer", TA_CDLINVERTEDHAMMER);
+}
+
+PHP_FUNCTION(ta_cdlkicking)
+{
+  ta_pattern_common(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdlkicking", TA_CDLKICKING);
+}
+
+PHP_FUNCTION(ta_cdlkickingbylength)
+{
+  ta_pattern_common(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdlkickingbylength", TA_CDLKICKINGBYLENGTH);
+}
+
+PHP_FUNCTION(ta_cdlladderbottom)
+{
+  ta_pattern_common(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdlladderbottom", TA_CDLLADDERBOTTOM);
+}
+
+PHP_FUNCTION(ta_cdllongleggeddoji)
+{
+  ta_pattern_common(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdllongleggeddoji", TA_CDLLONGLEGGEDDOJI);
+}
+
+PHP_FUNCTION(ta_cdllongline)
+{
+  ta_pattern_common(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdllongline", TA_CDLLONGLINE);
+}
+
+PHP_FUNCTION(ta_cdlmarubozu)
+{
+  ta_pattern_common(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdlmarubozu", TA_CDLMARUBOZU);
+}
+
+PHP_FUNCTION(ta_cdlmatchinglow)
+{
+  ta_pattern_common(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdlmatchinglow", TA_CDLMATCHINGLOW);
+}
+
+PHP_FUNCTION(ta_cdlmathold)
+{
+  ta_pattern_common_penetration(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdlmathold", TA_CDLMATHOLD);
+}
+
+PHP_FUNCTION(ta_cdlmorningdojistar)
+{
+  ta_pattern_common_penetration(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdlmorningdojistar", TA_CDLMORNINGDOJISTAR);
+}
+
+PHP_FUNCTION(ta_cdlmorningstar)
+{
+  ta_pattern_common_penetration(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdlmorningstar", TA_CDLMORNINGSTAR);
+}
+
+PHP_FUNCTION(ta_cdlonneck)
+{
+  ta_pattern_common(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdlonneck", TA_CDLONNECK);
+}
+
+PHP_FUNCTION(ta_cdlpiercing)
+{
+  ta_pattern_common(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdlpiercing", TA_CDLPIERCING);
+}
+
+PHP_FUNCTION(ta_cdlrickshawman)
+{
+  ta_pattern_common(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdlrickshawman", TA_CDLRICKSHAWMAN);
+}
+
+PHP_FUNCTION(ta_cdlrisefall3methods)
+{
+  ta_pattern_common(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdlrisefall3methods", TA_CDLRISEFALL3METHODS);
+}
+
+PHP_FUNCTION(ta_cdlseparatinglines)
+{
+  ta_pattern_common(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdlseparatinglines", TA_CDLSEPARATINGLINES);
+}
+
+PHP_FUNCTION(ta_cdlshootingstar)
+{
+  ta_pattern_common(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdlshootingstar", TA_CDLSHOOTINGSTAR);
+}
+
+PHP_FUNCTION(ta_cdlshortline)
+{
+  ta_pattern_common(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdlshortline", TA_CDLSHORTLINE);
+}
+
+PHP_FUNCTION(ta_cdlspinningtop)
+{
+  ta_pattern_common(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdlspinningtop", TA_CDLSPINNINGTOP);
+}
+
+PHP_FUNCTION(ta_cdlstalledpattern)
+{
+  ta_pattern_common(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdlstalledpattern", TA_CDLSTALLEDPATTERN);
+}
+
+PHP_FUNCTION(ta_cdlsticksandwich)
+{
+  ta_pattern_common(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdlsticksandwich", TA_CDLSTICKSANDWICH);
+}
+
+PHP_FUNCTION(ta_cdltakuri)
+{
+  ta_pattern_common(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdltakuri", TA_CDLTAKURI);
+}
+
+PHP_FUNCTION(ta_cdltasukigap)
+{
+  ta_pattern_common(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdltasukigap", TA_CDLTASUKIGAP);
+}
+
+PHP_FUNCTION(ta_cdlthrusting)
+{
+  ta_pattern_common(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdlthrusting", TA_CDLTHRUSTING);
+}
+
+PHP_FUNCTION(ta_cdltristar)
+{
+  ta_pattern_common(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdltristar", TA_CDLTRISTAR);
+}
+
+PHP_FUNCTION(ta_cdlunique3river)
+{
+  ta_pattern_common(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdlunique3river", TA_CDLUNIQUE3RIVER);
+}
+
+PHP_FUNCTION(ta_cdlupsidegap2crows)
+{
+  ta_pattern_common(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdlupsidegap2crows", TA_CDLUPSIDEGAP2CROWS);
+}
+
+PHP_FUNCTION(ta_cdlxsidegap3methods)
+{
+  ta_pattern_common(INTERNAL_FUNCTION_PARAM_PASSTHRU, "ta_cdlxsidegap3methods", TA_CDLXSIDEGAP3METHODS);
+}
+
 PHP_FUNCTION(ta_beta)
 {
   zval *input_a = NULL;
@@ -5902,6 +6392,67 @@ static const zend_function_entry ta_functions[] = {
   PHP_FE(ta_trix, arginfo_ta_trix)
   PHP_FE(ta_ultosc, arginfo_ta_ultosc)
   PHP_FE(ta_willr, arginfo_ta_willr)
+  PHP_FE(ta_cdl2crows, arginfo_ta_cdl2crows)
+  PHP_FE(ta_cdl3blackcrows, arginfo_ta_cdl3blackcrows)
+  PHP_FE(ta_cdl3inside, arginfo_ta_cdl3inside)
+  PHP_FE(ta_cdl3linestrike, arginfo_ta_cdl3linestrike)
+  PHP_FE(ta_cdl3outside, arginfo_ta_cdl3outside)
+  PHP_FE(ta_cdl3starsinsouth, arginfo_ta_cdl3starsinsouth)
+  PHP_FE(ta_cdl3whitesoldiers, arginfo_ta_cdl3whitesoldiers)
+  PHP_FE(ta_cdlabandonedbaby, arginfo_ta_cdlabandonedbaby)
+  PHP_FE(ta_cdladvanceblock, arginfo_ta_cdladvanceblock)
+  PHP_FE(ta_cdlbelthold, arginfo_ta_cdlbelthold)
+  PHP_FE(ta_cdlbreakaway, arginfo_ta_cdlbreakaway)
+  PHP_FE(ta_cdlclosingmarubozu, arginfo_ta_cdlclosingmarubozu)
+  PHP_FE(ta_cdlconcealbabyswall, arginfo_ta_cdlconcealbabyswall)
+  PHP_FE(ta_cdlcounterattack, arginfo_ta_cdlcounterattack)
+  PHP_FE(ta_cdldarkcloudcover, arginfo_ta_cdldarkcloudcover)
+  PHP_FE(ta_cdldoji, arginfo_ta_cdldoji)
+  PHP_FE(ta_cdldojistar, arginfo_ta_cdldojistar)
+  PHP_FE(ta_cdldragonflydoji, arginfo_ta_cdldragonflydoji)
+  PHP_FE(ta_cdlengulfing, arginfo_ta_cdlengulfing)
+  PHP_FE(ta_cdleveningdojistar, arginfo_ta_cdleveningdojistar)
+  PHP_FE(ta_cdleveningstar, arginfo_ta_cdleveningstar)
+  PHP_FE(ta_cdlgapsidesidewhite, arginfo_ta_cdlgapsidesidewhite)
+  PHP_FE(ta_cdlgravestonedoji, arginfo_ta_cdlgravestonedoji)
+  PHP_FE(ta_cdlhammer, arginfo_ta_cdlhammer)
+  PHP_FE(ta_cdlhangingman, arginfo_ta_cdlhangingman)
+  PHP_FE(ta_cdlharami, arginfo_ta_cdlharami)
+  PHP_FE(ta_cdlharamicross, arginfo_ta_cdlharamicross)
+  PHP_FE(ta_cdlhighwave, arginfo_ta_cdlhighwave)
+  PHP_FE(ta_cdlhikkake, arginfo_ta_cdlhikkake)
+  PHP_FE(ta_cdlhikkakemod, arginfo_ta_cdlhikkakemod)
+  PHP_FE(ta_cdlhomingpigeon, arginfo_ta_cdlhomingpigeon)
+  PHP_FE(ta_cdlidentical3crows, arginfo_ta_cdlidentical3crows)
+  PHP_FE(ta_cdlinneck, arginfo_ta_cdlinneck)
+  PHP_FE(ta_cdlinvertedhammer, arginfo_ta_cdlinvertedhammer)
+  PHP_FE(ta_cdlkicking, arginfo_ta_cdlkicking)
+  PHP_FE(ta_cdlkickingbylength, arginfo_ta_cdlkickingbylength)
+  PHP_FE(ta_cdlladderbottom, arginfo_ta_cdlladderbottom)
+  PHP_FE(ta_cdllongleggeddoji, arginfo_ta_cdllongleggeddoji)
+  PHP_FE(ta_cdllongline, arginfo_ta_cdllongline)
+  PHP_FE(ta_cdlmarubozu, arginfo_ta_cdlmarubozu)
+  PHP_FE(ta_cdlmatchinglow, arginfo_ta_cdlmatchinglow)
+  PHP_FE(ta_cdlmathold, arginfo_ta_cdlmathold)
+  PHP_FE(ta_cdlmorningdojistar, arginfo_ta_cdlmorningdojistar)
+  PHP_FE(ta_cdlmorningstar, arginfo_ta_cdlmorningstar)
+  PHP_FE(ta_cdlonneck, arginfo_ta_cdlonneck)
+  PHP_FE(ta_cdlpiercing, arginfo_ta_cdlpiercing)
+  PHP_FE(ta_cdlrickshawman, arginfo_ta_cdlrickshawman)
+  PHP_FE(ta_cdlrisefall3methods, arginfo_ta_cdlrisefall3methods)
+  PHP_FE(ta_cdlseparatinglines, arginfo_ta_cdlseparatinglines)
+  PHP_FE(ta_cdlshootingstar, arginfo_ta_cdlshootingstar)
+  PHP_FE(ta_cdlshortline, arginfo_ta_cdlshortline)
+  PHP_FE(ta_cdlspinningtop, arginfo_ta_cdlspinningtop)
+  PHP_FE(ta_cdlstalledpattern, arginfo_ta_cdlstalledpattern)
+  PHP_FE(ta_cdlsticksandwich, arginfo_ta_cdlsticksandwich)
+  PHP_FE(ta_cdltakuri, arginfo_ta_cdltakuri)
+  PHP_FE(ta_cdltasukigap, arginfo_ta_cdltasukigap)
+  PHP_FE(ta_cdlthrusting, arginfo_ta_cdlthrusting)
+  PHP_FE(ta_cdltristar, arginfo_ta_cdltristar)
+  PHP_FE(ta_cdlunique3river, arginfo_ta_cdlunique3river)
+  PHP_FE(ta_cdlupsidegap2crows, arginfo_ta_cdlupsidegap2crows)
+  PHP_FE(ta_cdlxsidegap3methods, arginfo_ta_cdlxsidegap3methods)
   PHP_FE(ta_beta, arginfo_ta_beta)
   PHP_FE(ta_correl, arginfo_ta_correl)
   PHP_FE(ta_linearreg, arginfo_ta_linearreg)

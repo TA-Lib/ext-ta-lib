@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 98a6424c063ab67e52040e35a9b7dd5ccd9fe535 */
+ * Stub hash: 14e121fdbc35671b3ef9a32d4d1c45717e831b60 */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_ta_version, 0, 0, IS_STRING, 0)
 ZEND_END_ARG_INFO()
@@ -333,6 +333,134 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_ta_ultosc, 0, 3, IS_ARRAY, 0)
 ZEND_END_ARG_INFO()
 
 #define arginfo_ta_willr arginfo_ta_atr
+
+#define arginfo_ta_cdl2crows arginfo_ta_avgprice
+
+#define arginfo_ta_cdl3blackcrows arginfo_ta_avgprice
+
+#define arginfo_ta_cdl3inside arginfo_ta_avgprice
+
+#define arginfo_ta_cdl3linestrike arginfo_ta_avgprice
+
+#define arginfo_ta_cdl3outside arginfo_ta_avgprice
+
+#define arginfo_ta_cdl3starsinsouth arginfo_ta_avgprice
+
+#define arginfo_ta_cdl3whitesoldiers arginfo_ta_avgprice
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_ta_cdlabandonedbaby, 0, 4, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO(0, open, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO(0, high, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO(0, low, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO(0, close, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, penetration, IS_DOUBLE, 0, "0.0")
+ZEND_END_ARG_INFO()
+
+#define arginfo_ta_cdladvanceblock arginfo_ta_avgprice
+
+#define arginfo_ta_cdlbelthold arginfo_ta_avgprice
+
+#define arginfo_ta_cdlbreakaway arginfo_ta_avgprice
+
+#define arginfo_ta_cdlclosingmarubozu arginfo_ta_avgprice
+
+#define arginfo_ta_cdlconcealbabyswall arginfo_ta_avgprice
+
+#define arginfo_ta_cdlcounterattack arginfo_ta_avgprice
+
+#define arginfo_ta_cdldarkcloudcover arginfo_ta_cdlabandonedbaby
+
+#define arginfo_ta_cdldoji arginfo_ta_avgprice
+
+#define arginfo_ta_cdldojistar arginfo_ta_avgprice
+
+#define arginfo_ta_cdldragonflydoji arginfo_ta_avgprice
+
+#define arginfo_ta_cdlengulfing arginfo_ta_avgprice
+
+#define arginfo_ta_cdleveningdojistar arginfo_ta_cdlabandonedbaby
+
+#define arginfo_ta_cdleveningstar arginfo_ta_cdlabandonedbaby
+
+#define arginfo_ta_cdlgapsidesidewhite arginfo_ta_avgprice
+
+#define arginfo_ta_cdlgravestonedoji arginfo_ta_avgprice
+
+#define arginfo_ta_cdlhammer arginfo_ta_avgprice
+
+#define arginfo_ta_cdlhangingman arginfo_ta_avgprice
+
+#define arginfo_ta_cdlharami arginfo_ta_avgprice
+
+#define arginfo_ta_cdlharamicross arginfo_ta_avgprice
+
+#define arginfo_ta_cdlhighwave arginfo_ta_avgprice
+
+#define arginfo_ta_cdlhikkake arginfo_ta_avgprice
+
+#define arginfo_ta_cdlhikkakemod arginfo_ta_avgprice
+
+#define arginfo_ta_cdlhomingpigeon arginfo_ta_avgprice
+
+#define arginfo_ta_cdlidentical3crows arginfo_ta_avgprice
+
+#define arginfo_ta_cdlinneck arginfo_ta_avgprice
+
+#define arginfo_ta_cdlinvertedhammer arginfo_ta_avgprice
+
+#define arginfo_ta_cdlkicking arginfo_ta_avgprice
+
+#define arginfo_ta_cdlkickingbylength arginfo_ta_avgprice
+
+#define arginfo_ta_cdlladderbottom arginfo_ta_avgprice
+
+#define arginfo_ta_cdllongleggeddoji arginfo_ta_avgprice
+
+#define arginfo_ta_cdllongline arginfo_ta_avgprice
+
+#define arginfo_ta_cdlmarubozu arginfo_ta_avgprice
+
+#define arginfo_ta_cdlmatchinglow arginfo_ta_avgprice
+
+#define arginfo_ta_cdlmathold arginfo_ta_cdlabandonedbaby
+
+#define arginfo_ta_cdlmorningdojistar arginfo_ta_cdlabandonedbaby
+
+#define arginfo_ta_cdlmorningstar arginfo_ta_cdlabandonedbaby
+
+#define arginfo_ta_cdlonneck arginfo_ta_avgprice
+
+#define arginfo_ta_cdlpiercing arginfo_ta_avgprice
+
+#define arginfo_ta_cdlrickshawman arginfo_ta_avgprice
+
+#define arginfo_ta_cdlrisefall3methods arginfo_ta_avgprice
+
+#define arginfo_ta_cdlseparatinglines arginfo_ta_avgprice
+
+#define arginfo_ta_cdlshootingstar arginfo_ta_avgprice
+
+#define arginfo_ta_cdlshortline arginfo_ta_avgprice
+
+#define arginfo_ta_cdlspinningtop arginfo_ta_avgprice
+
+#define arginfo_ta_cdlstalledpattern arginfo_ta_avgprice
+
+#define arginfo_ta_cdlsticksandwich arginfo_ta_avgprice
+
+#define arginfo_ta_cdltakuri arginfo_ta_avgprice
+
+#define arginfo_ta_cdltasukigap arginfo_ta_avgprice
+
+#define arginfo_ta_cdlthrusting arginfo_ta_avgprice
+
+#define arginfo_ta_cdltristar arginfo_ta_avgprice
+
+#define arginfo_ta_cdlunique3river arginfo_ta_avgprice
+
+#define arginfo_ta_cdlupsidegap2crows arginfo_ta_avgprice
+
+#define arginfo_ta_cdlxsidegap3methods arginfo_ta_avgprice
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_ta_beta, 0, 2, IS_ARRAY, 0)
 	ZEND_ARG_TYPE_INFO(0, valuesA, IS_ARRAY, 0)

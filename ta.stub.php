@@ -917,6 +917,677 @@ function ta_ultosc(array $high, array $low, array $close, int $period1 = 7, int 
 function ta_willr(array $high, array $low, array $close, int $period = 14): array {}
 
 /**
+ * CDL2CROWS pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdl2crows(array $open, array $high, array $low, array $close): array {}
+
+/**
+ * CDL3BLACKCROWS pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdl3blackcrows(array $open, array $high, array $low, array $close): array {}
+
+/**
+ * CDL3INSIDE pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdl3inside(array $open, array $high, array $low, array $close): array {}
+
+/**
+ * CDL3LINESTRIKE pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdl3linestrike(array $open, array $high, array $low, array $close): array {}
+
+/**
+ * CDL3OUTSIDE pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdl3outside(array $open, array $high, array $low, array $close): array {}
+
+/**
+ * CDL3STARSINSOUTH pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdl3starsinsouth(array $open, array $high, array $low, array $close): array {}
+
+/**
+ * CDL3WHITESOLDIERS pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdl3whitesoldiers(array $open, array $high, array $low, array $close): array {}
+
+/**
+ * CDLABANDONEDBABY pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdlabandonedbaby(array $open, array $high, array $low, array $close, float $penetration = 0.0): array {}
+
+/**
+ * CDLADVANCEBLOCK pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdladvanceblock(array $open, array $high, array $low, array $close): array {}
+
+/**
+ * CDLBELTHOLD pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdlbelthold(array $open, array $high, array $low, array $close): array {}
+
+/**
+ * CDLBREAKAWAY pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdlbreakaway(array $open, array $high, array $low, array $close): array {}
+
+/**
+ * CDLCLOSINGMARUBOZU pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdlclosingmarubozu(array $open, array $high, array $low, array $close): array {}
+
+/**
+ * CDLCONCEALBABYSWALL pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdlconcealbabyswall(array $open, array $high, array $low, array $close): array {}
+
+/**
+ * CDLCOUNTERATTACK pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdlcounterattack(array $open, array $high, array $low, array $close): array {}
+
+/**
+ * CDLDARKCLOUDCOVER pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdldarkcloudcover(array $open, array $high, array $low, array $close, float $penetration = 0.0): array {}
+
+/**
+ * CDLDOJI pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdldoji(array $open, array $high, array $low, array $close): array {}
+
+/**
+ * CDLDOJISTAR pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdldojistar(array $open, array $high, array $low, array $close): array {}
+
+/**
+ * CDLDRAGONFLYDOJI pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdldragonflydoji(array $open, array $high, array $low, array $close): array {}
+
+/**
+ * CDLENGULFING pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdlengulfing(array $open, array $high, array $low, array $close): array {}
+
+/**
+ * CDLEVENINGDOJISTAR pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdleveningdojistar(array $open, array $high, array $low, array $close, float $penetration = 0.0): array {}
+
+/**
+ * CDLEVENINGSTAR pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdleveningstar(array $open, array $high, array $low, array $close, float $penetration = 0.0): array {}
+
+/**
+ * CDLGAPSIDESIDEWHITE pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdlgapsidesidewhite(array $open, array $high, array $low, array $close): array {}
+
+/**
+ * CDLGRAVESTONEDOJI pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdlgravestonedoji(array $open, array $high, array $low, array $close): array {}
+
+/**
+ * CDLHAMMER pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdlhammer(array $open, array $high, array $low, array $close): array {}
+
+/**
+ * CDLHANGINGMAN pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdlhangingman(array $open, array $high, array $low, array $close): array {}
+
+/**
+ * CDLHARAMI pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdlharami(array $open, array $high, array $low, array $close): array {}
+
+/**
+ * CDLHARAMICROSS pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdlharamicross(array $open, array $high, array $low, array $close): array {}
+
+/**
+ * CDLHIGHWAVE pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdlhighwave(array $open, array $high, array $low, array $close): array {}
+
+/**
+ * CDLHIKKAKE pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdlhikkake(array $open, array $high, array $low, array $close): array {}
+
+/**
+ * CDLHIKKAKEMOD pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdlhikkakemod(array $open, array $high, array $low, array $close): array {}
+
+/**
+ * CDLHOMINGPIGEON pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdlhomingpigeon(array $open, array $high, array $low, array $close): array {}
+
+/**
+ * CDLIDENTICAL3CROWS pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdlidentical3crows(array $open, array $high, array $low, array $close): array {}
+
+/**
+ * CDLINNECK pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdlinneck(array $open, array $high, array $low, array $close): array {}
+
+/**
+ * CDLINVERTEDHAMMER pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdlinvertedhammer(array $open, array $high, array $low, array $close): array {}
+
+/**
+ * CDLKICKING pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdlkicking(array $open, array $high, array $low, array $close): array {}
+
+/**
+ * CDLKICKINGBYLENGTH pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdlkickingbylength(array $open, array $high, array $low, array $close): array {}
+
+/**
+ * CDLLADDERBOTTOM pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdlladderbottom(array $open, array $high, array $low, array $close): array {}
+
+/**
+ * CDLLONGLEGGEDDOJI pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdllongleggeddoji(array $open, array $high, array $low, array $close): array {}
+
+/**
+ * CDLLONGLINE pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdllongline(array $open, array $high, array $low, array $close): array {}
+
+/**
+ * CDLMARUBOZU pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdlmarubozu(array $open, array $high, array $low, array $close): array {}
+
+/**
+ * CDLMATCHINGLOW pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdlmatchinglow(array $open, array $high, array $low, array $close): array {}
+
+/**
+ * CDLMATHOLD pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdlmathold(array $open, array $high, array $low, array $close, float $penetration = 0.0): array {}
+
+/**
+ * CDLMORNINGDOJISTAR pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdlmorningdojistar(array $open, array $high, array $low, array $close, float $penetration = 0.0): array {}
+
+/**
+ * CDLMORNINGSTAR pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdlmorningstar(array $open, array $high, array $low, array $close, float $penetration = 0.0): array {}
+
+/**
+ * CDLONNECK pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdlonneck(array $open, array $high, array $low, array $close): array {}
+
+/**
+ * CDLPIERCING pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdlpiercing(array $open, array $high, array $low, array $close): array {}
+
+/**
+ * CDLRICKSHAWMAN pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdlrickshawman(array $open, array $high, array $low, array $close): array {}
+
+/**
+ * CDLRISEFALL3METHODS pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdlrisefall3methods(array $open, array $high, array $low, array $close): array {}
+
+/**
+ * CDLSEPARATINGLINES pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdlseparatinglines(array $open, array $high, array $low, array $close): array {}
+
+/**
+ * CDLSHOOTINGSTAR pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdlshootingstar(array $open, array $high, array $low, array $close): array {}
+
+/**
+ * CDLSHORTLINE pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdlshortline(array $open, array $high, array $low, array $close): array {}
+
+/**
+ * CDLSPINNINGTOP pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdlspinningtop(array $open, array $high, array $low, array $close): array {}
+
+/**
+ * CDLSTALLEDPATTERN pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdlstalledpattern(array $open, array $high, array $low, array $close): array {}
+
+/**
+ * CDLSTICKSANDWICH pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdlsticksandwich(array $open, array $high, array $low, array $close): array {}
+
+/**
+ * CDLTAKURI pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdltakuri(array $open, array $high, array $low, array $close): array {}
+
+/**
+ * CDLTASUKIGAP pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdltasukigap(array $open, array $high, array $low, array $close): array {}
+
+/**
+ * CDLTHRUSTING pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdlthrusting(array $open, array $high, array $low, array $close): array {}
+
+/**
+ * CDLTRISTAR pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdltristar(array $open, array $high, array $low, array $close): array {}
+
+/**
+ * CDLUNIQUE3RIVER pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdlunique3river(array $open, array $high, array $low, array $close): array {}
+
+/**
+ * CDLUPSIDEGAP2CROWS pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdlupsidegap2crows(array $open, array $high, array $low, array $close): array {}
+
+/**
+ * CDLXSIDEGAP3METHODS pattern.
+ *
+ * @param float[] $open
+ * @param float[] $high
+ * @param float[] $low
+ * @param float[] $close
+ * @return array<int, int|null>
+ */
+function ta_cdlxsidegap3methods(array $open, array $high, array $low, array $close): array {}
+
+/**
  * Beta (BETA).
  *
  * @param float[] $valuesA
