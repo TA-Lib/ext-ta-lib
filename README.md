@@ -21,6 +21,8 @@ make install
 
 ## TA-Lib Functions
 
+Check the full [API docs](https://coral-media.github.io/ext-ta/docs/api/Home).
+
 ### Overlap Studies
 Trend-following averages and bands that overlay price series.
 
