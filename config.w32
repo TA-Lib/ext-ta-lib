@@ -1,6 +1,7 @@
 ARG_WITH("ta-lib", "TA-Lib support", "yes");
 
 if (PHP_TA_LIB != "no") {
+  var CFLAGS_TA = "";
   ADD_FLAG("CFLAGS_TA", "/DHAVE_TA");
   ADD_FLAG("CFLAGS_TA", "/Ilib\\ta-lib\\include");
   ADD_FLAG("CFLAGS_TA", "/Ilib\\ta-lib\\src");
